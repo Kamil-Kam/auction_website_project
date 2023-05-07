@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form method="POST">
+    {% csrf_token %}
+    <div>
+        <input required name="email">
+        <input required name="username">
+        <input required name="firstname">
+        <input required name="surname">
+        <input required name="country">
+        <input required name="city">
+        <input required name="street">
+        <input required name="postcode">
+        <input required name="password">
+        <input required name="repeated_password">
+    </div>
+
+    <div>
+         <button type="submit">Submit</button>
+    </div>
+
+</form>
+
+</body>
+</html>

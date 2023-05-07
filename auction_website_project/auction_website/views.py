@@ -1,8 +1,5 @@
 from django.shortcuts import render, redirect
-from . models import Category, Item
-from . forms import NewUserForm
-from django.contrib.auth import login
-from django.contrib import messages
+from . models import Category, Item, Account
 
 # Create your views here.
 
@@ -60,7 +57,20 @@ def account(request):
 
 def create_account(request):
 
-    return render(request=request, template_name="create_account.html")
+    if request.method == 'POST':
+        Account.objects.create(
+            email=request.POST['email'],
+            username=request.POST['username'],
+            firstname=request.POST['firstname'],
+            surname=request.POST['surname'],
+            country=request.POST['country'],
+            city=request.POST['city'],
+            street=request.POST['street'],
+            postcode=request.POST['postcode'],
+            password=request.POST['password'],
+        )
+
+    return render(request, "create_account.html")
 
 
 

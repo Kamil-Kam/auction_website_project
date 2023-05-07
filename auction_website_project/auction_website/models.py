@@ -40,8 +40,7 @@ class Account(models.Model):
     city = models.CharField(max_length=30)
     street = models.CharField(max_length=30)
     postcode = models.CharField(max_length=10)
-    password1 = models.CharField(max_length=20, validators=[validators.validate_password])
-    USERNAME_FIELD = 'username'
+    password = models.CharField(max_length=20, validators=[validators.validate_password])
 
     def __str__(self):
         return '%s %s %s' % (self.username, self.firstname, self.surname)
