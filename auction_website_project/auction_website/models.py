@@ -25,21 +25,24 @@ class Item(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     stan = models.ForeignKey(Stan, on_delete=models.SET_NULL, null=True)
     location = models.CharField(max_length=240)
+    amount = models.IntegerField(default=1)
 
     def __str__(self):
         return self.title
 
 
 class Account(models.Model):
-    nickname = models.CharField(max_length=20)
+    email = models.EmailField()
+    username = models.CharField(max_length=20)
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
     city = models.CharField(max_length=30)
     street = models.CharField(max_length=30)
     postcode = models.CharField(max_length=10)
-    password = models.CharField(max_length=20, validators=[validators.validate_password])
+    password1 = models.CharField(max_length=20, validators=[validators.validate_password])
+    USERNAME_FIELD = 'username'
 
     def __str__(self):
-        return '%s %s %s' % (self.nickname, self.firstname, self.surname)
+        return '%s %s %s' % (self.username, self.firstname, self.surname)
 

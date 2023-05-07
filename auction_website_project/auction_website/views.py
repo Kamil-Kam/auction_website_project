@@ -1,5 +1,8 @@
-from django.shortcuts import render
-from . import models
+from django.shortcuts import render, redirect
+from . models import Category, Item
+from . forms import NewUserForm
+from django.contrib.auth import login
+from django.contrib import messages
 
 # Create your views here.
 
@@ -10,13 +13,24 @@ def main_page(request):
 
 
 def categories_view(request):
+    categories = Category.objects.all()
 
-    return render(request, 'categories_view.html')
+    context = {
+        'categories': categories,
+    }
+
+    return render(request, 'categories_view.html', context)
 
 
-def single_category(request):
+def single_category(request, category_name):
+    items = Item.objects.filter(category__category=category_name)
 
-    return render(request, 'single_category.html')
+    context = {
+        'category_name': category_name,
+        'items': items,
+    }
+
+    return render(request, 'single_category.html', context)
 
 
 def add_item(request):
@@ -42,6 +56,11 @@ def log_in(request):
 def account(request):
 
     return render(request, 'account.html')
+
+
+def create_account(request):
+
+    return render(request=request, template_name="create_account.html")
 
 
 

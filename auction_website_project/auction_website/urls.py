@@ -8,6 +8,7 @@ urlpatterns = [
     path('item_photo', views.item_photo, name='item_photo'),
     path('log_in', views.log_in, name='log_in'),
     path('', views.main_page, name='main_page'),
-    path('single_category', views.single_category, name='single_category'),
-    path('item_view', views.item_view, name='item_view')
+    path('single_category/<str:category_name>/', views.single_category, name='single_category'),
+    path('item_view', views.item_view, name='item_view'),
+    path('create_account', views.create_account, name='create_account'),
 ]
