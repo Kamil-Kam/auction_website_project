@@ -8,22 +8,40 @@
 
 <form method="POST">
     {% csrf_token %}
-    <div>
-        <input required name="email">
+    <label>email</label>
+    <input required name="email">
+    <br>
+    <label>username</label>
         <input required name="username">
+    <br>
+    <label>firstname</label>
         <input required name="firstname">
+    <br>
+    <label>surnamel</label>
         <input required name="surname">
+    <br>
+    <label>country</label>
         <input required name="country">
+    <br>
+    <label>city</label>
         <input required name="city">
+    <br>
+    <label>street</label>
         <input required name="street">
+    <br>
+    <label>postcode</label>
         <input required name="postcode">
+    <br>
+    <label>password</label>
         <input required name="password">
+    <br>
+    <label>repeated_password</label>
         <input required name="repeated_password">
-    </div>
+    <br>
 
-    <div>
+
          <button type="submit">Submit</button>
-    </div>
+
 
 </form>
 

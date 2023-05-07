@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from . models import Category, Item, Account
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 # Create your views here.
 
@@ -46,6 +48,25 @@ def item_photo(request):
 
 
 def log_in(request):
+
+    if request.method == "POST":
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(request, username=username, password=password)
+
+        try:
+            user = Account.objects.get(username=username)
+
+
+            if password == user.password:
+                messages.success(request, "Logged In Sucessfully!!")
+
+            else:
+                messages.error(request, 'Invalid email or password')
+
+        except:
+            messages.error(request, 'Invalid email or password')
 
     return render(request, 'log_in.html')
 
