@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from . models import Category, Item, Account
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-
+from . forms import NewUAccountForm
 # Create your views here.
 
 
@@ -78,16 +78,32 @@ def account(request):
 def create_account(request):
 
     if request.method == 'POST':
+
+        email = request.POST['email'],
+        username = request.POST['username'],
+        firstname = request.POST['firstname'],
+        surname = request.POST['surname'],
+        country = request.POST['country'],
+        city = request.POST['city'],
+        street = request.POST['street'],
+        postcode = request.POST['postcode'],
+        password = request.POST['password'],
+        repeated_password = request.POST['repeated_password'],
+
+        if len(password) < 5:
+            error_message = "Password must be at least 5 characters long."
+            return render(request, "create_account.html", {"error_message": error_message})
+
         Account.objects.create(
-            email=request.POST['email'],
-            username=request.POST['username'],
-            firstname=request.POST['firstname'],
-            surname=request.POST['surname'],
-            country=request.POST['country'],
-            city=request.POST['city'],
-            street=request.POST['street'],
-            postcode=request.POST['postcode'],
-            password=request.POST['password'],
+            email=email,
+            username=username,
+            firstname=firstname,
+            surname=surname,
+            country=country,
+            city=city,
+            street=street,
+            postcode=postcode,
+            password=password,
         )
 
     return render(request, "create_account.html")
