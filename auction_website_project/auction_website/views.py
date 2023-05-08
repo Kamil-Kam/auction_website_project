@@ -58,7 +58,6 @@ def log_in(request):
         try:
             user = Account.objects.get(username=username)
 
-
             if password == user.password:
                 messages.success(request, "Logged In Sucessfully!!")
 
