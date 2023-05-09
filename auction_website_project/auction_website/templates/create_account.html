@@ -13,38 +13,38 @@
 <form method="POST">
     {% csrf_token %}
     <label>email</label>
-    <input required name="email">
+    <input required name="email" value="{{ email }}">
     <br>
     <label>username</label>
-        <input required name="username">
+        <input required name="username" value="{{ username }}">
     <br>
     <label>firstname</label>
-        <input required name="firstname">
+        <input required name="firstname" value="{{ firstname }}">
     <br>
-    <label>surnamel</label>
-        <input required name="surname">
+    <label>surname</label>
+        <input required name="surname" value="{{ surname }}">
     <br>
     <label>country</label>
-        <input required name="country">
+        <input required name="country" value="{{ country }}">
     <br>
     <label>city</label>
-        <input required name="city">
+        <input required name="city" value="{{ city }}">
     <br>
     <label>street</label>
-        <input required name="street">
+        <input required name="street" value="{{ city }}">
     <br>
     <label>postcode</label>
-        <input required name="postcode">
+        <input required name="postcode" value="{{ postcode }}">
     <br>
     <label>password</label>
-        <input required name="password">
+        <input required name="password" type="password">
     <br>
     <label>repeated_password</label>
-        <input required name="repeated_password">
+        <input required name="repeated_password" type="password">
     <br>
 
 
-         <button type="submit">Submit</button>
+     <button type="submit">Submit</button>
 
 
 </form>

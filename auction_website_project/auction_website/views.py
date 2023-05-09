@@ -106,17 +106,25 @@ def create_account(request):
             password=password,
         )
 
-        if password != repeated_password:
-            ValidationError("Passwords do not match")
-
         try:
             account.full_clean()
+
+            if password != repeated_password:
+                ValidationError("Passwords do not match")
             account.save()
 
             return render(request, 'create_account.html')
 
-        except ValidationError as error_message:
-            return render(request, "create_account.html", {"error_message": str(error_message)})
+        except ValidationError as error:
+            errors = list(error.messages)
+
+            if password != repeated_password:
+                errors.append("Passwords do not match")
+
+            return render(request, "create_account.html", {"error_message": errors, "email": email,
+                                                           "username": username, "firstname": firstname,
+                                                           "surname": surname, "country": country, "city": city,
+                                                           "street": street, "postcode": postcode})
 
     return render(request, "create_account.html")
 
