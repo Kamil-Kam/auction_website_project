@@ -3,6 +3,10 @@ from . models import Category, Item, Account
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from . forms import NewUAccountForm
+from . import validators
+from django.core.exceptions import ValidationError
+
+
 # Create your views here.
 
 
@@ -79,22 +83,18 @@ def create_account(request):
 
     if request.method == 'POST':
 
-        email = request.POST['email'],
-        username = request.POST['username'],
-        firstname = request.POST['firstname'],
-        surname = request.POST['surname'],
-        country = request.POST['country'],
-        city = request.POST['city'],
-        street = request.POST['street'],
-        postcode = request.POST['postcode'],
-        password = request.POST['password'],
-        repeated_password = request.POST['repeated_password'],
+        email = request.POST['email']
+        username = request.POST['username']
+        firstname = request.POST['firstname']
+        surname = request.POST['surname']
+        country = request.POST['country']
+        city = request.POST['city']
+        street = request.POST['street']
+        postcode = request.POST['postcode']
+        password = request.POST['password']
+        repeated_password = request.POST['repeated_password']
 
-        if len(password) < 5:
-            error_message = "Password must be at least 5 characters long."
-            return render(request, "create_account.html", {"error_message": error_message})
-
-        Account.objects.create(
+        account = Account(
             email=email,
             username=username,
             firstname=firstname,
@@ -105,6 +105,18 @@ def create_account(request):
             postcode=postcode,
             password=password,
         )
+
+        if password != repeated_password:
+            ValidationError("Passwords do not match")
+
+        try:
+            account.full_clean()
+            account.save()
+
+            return render(request, 'create_account.html')
+
+        except ValidationError as error_message:
+            return render(request, "create_account.html", {"error_message": str(error_message)})
 
     return render(request, "create_account.html")
 

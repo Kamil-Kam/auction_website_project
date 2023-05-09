@@ -1,32 +1,27 @@
 from django.core.exceptions import ValidationError
+from django.db import models
 import re
 
 
-def validate_email(email, account):
+def validate_email(email):
     email_regex = r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'
 
     if not re.match(email_regex, email):
         raise ValidationError("Wrong email")
 
-    if account.objects.get(email=email):
-        raise ValidationError("Email already exist")
 
-
-def validate_username(username, account):
-    if account.objects.get(username=username):
-        raise ValidationError("Username already exist")
-
+def validate_username(username):
     name_regex = r'[a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*$'
 
     if not re.match(name_regex, username):
         raise ValidationError("Wrong username")
 
 
-def validate_firstname(name):
+def validate_name(name):
     name_regex = r'[a-zA-Z0-9]+(\s[a-zA-Z0-9]+)*$'
 
     if not re.match(name_regex, name):
-        raise ValidationError("Wrong name")
+        raise ValidationError(f"Wrong {name}")
 
 
 def validate_postcode(postcode):
@@ -36,5 +31,9 @@ def validate_postcode(postcode):
         raise ValidationError("Wrong name")
 
 
-def validate_password(password, repeated_password):
-    pass
+def validate_password(password):
+    regex = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+
+    if not re.match(regex, password):
+        raise ValidationError("Wrong password")
+
