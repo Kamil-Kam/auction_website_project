@@ -41,7 +41,8 @@ class Account(models.Model):
     city = models.CharField(max_length=30, validators=[validators.validate_name])
     street = models.CharField(max_length=30, validators=[validators.validate_name])
     postcode = models.CharField(max_length=10, validators=[validators.validate_postcode])
-    password = models.CharField(max_length=20, validators=[validators.validate_password])
+    password = models.CharField(max_length=100)
+    avatar = models.ImageField(blank=True, null=True)
 
     def __str__(self):
         return '%s %s %s' % (self.username, self.firstname, self.surname)

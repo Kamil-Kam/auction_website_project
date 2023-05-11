@@ -6,5 +6,61 @@
 </head>
 <body>
 
+<div>
+    ACCOUNT
+</div>
+
+
+{% if error_message %}
+    <p class="error-message">{{ error_message }}</p>
+{% endif %}
+
+{% if account.avatar %}
+     <p><img src="{{account.avatar.url}}" class="rounded" alt="image not found"></p>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div><label>avatar</label></div>
+        <input name="image" type="file" multiple class="form-control-file" accept="image/jpeg, image/png">
+    <br>
+    <label>email</label>
+    <input required name="email" value="{{ account.email }}">
+    <br>
+    <label>username</label>
+        <input required name="username" value="{{ account.username }}">
+    <br>
+    <label>firstname</label>
+        <input required name="firstname" value="{{ account.firstname }}">
+    <br>
+    <label>surname</label>
+        <input required name="surname" value="{{ account.surname }}">
+    <br>
+    <label>country</label>
+        <input required name="country" value="{{ account.country }}">
+    <br>
+    <label>city</label>
+        <input required name="city" value="{{ account.city }}">
+    <br>
+    <label>street</label>
+        <input required name="street" value="{{ account.street }}">
+    <br>
+    <label>postcode</label>
+        <input required name="postcode" value="{{ account.postcode }}">
+    <br>
+    <label>password</label>
+        <input required name="password" type="password">
+    <br>
+    <label>repeated_password</label>
+        <input required name="repeated_password" type="password">
+    <br>
+
+
+     <button type="submit">Submit</button>
+
+
+</form>
+
 </body>
 </html>

@@ -28,12 +28,12 @@ def validate_postcode(postcode):
     regex = r'^[0-9]{2}-[0-9]{3}$'
 
     if not re.match(regex, postcode):
-        raise ValidationError("Wrong name")
+        raise ValidationError("Wrong postcode")
 
 
 def validate_password(password):
     regex = r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
 
-    if not re.match(regex, password):
-        raise ValidationError("Wrong password")
+    return re.match(regex, password)
+
 

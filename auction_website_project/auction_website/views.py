@@ -5,7 +5,7 @@ from django.contrib import messages
 from . forms import NewUAccountForm
 from . import validators
 from django.core.exceptions import ValidationError
-
+from django.contrib.auth.hashers import make_password, check_password
 
 # Create your views here.
 
@@ -57,19 +57,21 @@ def log_in(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        user = authenticate(request, username=username, password=password)
+        # user = authenticate(request, username=username, password=password)
+        print(password)
 
         try:
             user = Account.objects.get(username=username)
-
-            if password == user.password:
-                messages.success(request, "Logged In Sucessfully!!")
+            print(user.password)
+            if check_password(password, user.password):
+                messages.success(request, "Logged In Sucessfully!")
 
             else:
-                messages.error(request, 'Invalid email or password')
+                messages.error(request, 'Invalid username or password')
 
         except:
-            messages.error(request, 'Invalid email or password')
+            messages.error(request, 'Invalid username or password')
+
 
     return render(request, 'log_in.html')
 
@@ -93,7 +95,7 @@ def create_account(request):
         postcode = request.POST['postcode']
         password = request.POST['password']
         repeated_password = request.POST['repeated_password']
-
+        print(password)
         account = Account(
             email=email,
             username=username,
@@ -103,20 +105,28 @@ def create_account(request):
             city=city,
             street=street,
             postcode=postcode,
-            password=password,
+            password=make_password(password),
         )
-
+        print(account.password)
         try:
             account.full_clean()
 
             if password != repeated_password:
-                ValidationError("Passwords do not match")
+                raise ValidationError("Passwords do not match")
+
+            if not validators.validate_password(password):
+                raise ValidationError("Wrong password")
+
             account.save()
 
-            return render(request, 'create_account.html')
+            return render(request, "account.html", {"account": account})
 
         except ValidationError as error:
             errors = list(error.messages)
+            print('error')
+
+            if not validators.validate_password(password):
+                errors.append("Wrong password")
 
             if password != repeated_password:
                 errors.append("Passwords do not match")
