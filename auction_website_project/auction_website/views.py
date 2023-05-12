@@ -6,6 +6,7 @@ from . forms import NewUAccountForm
 from . import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -57,14 +58,13 @@ def log_in(request):
         username = request.POST['username']
         password = request.POST['password']
 
-        # user = authenticate(request, username=username, password=password)
-        print(password)
-
         try:
-            user = Account.objects.get(username=username)
-            print(user.password)
-            if check_password(password, user.password):
+            account = Account.objects.get(username=username)
+
+            if check_password(password, account.password):
                 messages.success(request, "Logged In Sucessfully!")
+
+                return redirect("account", username=username)
 
             else:
                 messages.error(request, 'Invalid username or password')
@@ -72,13 +72,83 @@ def log_in(request):
         except:
             messages.error(request, 'Invalid username or password')
 
-
     return render(request, 'log_in.html')
 
 
-def account(request):
+def account(request, username):
+    account = get_object_or_404(Account, username=username)
 
-    return render(request, 'account.html')
+    if request.method == 'POST':
+
+        if 'avatar' in request.POST:
+            account.avatar = request.POST['avatar']
+            account.save()
+            print('sdasd')
+            return render(request, "account.html", {'account': account})
+
+        elif 'email' in request.POST:
+
+            account.email = request.POST['email']
+            account.username = request.POST['username']
+            account.firstname = request.POST['firstname']
+            account.surname = request.POST['surname']
+            account.country = request.POST['country']
+            account.city = request.POST['city']
+            account.street = request.POST['street']
+            account.postcode = request.POST['postcode']
+
+            try:
+                account.full_clean()
+                account.save()
+
+                return redirect("account", username=account.username)
+
+            except ValidationError as error:
+                errors = list(error.messages)
+                print('error')
+
+                return render(request, "account.html", {"error_message": errors, 'account': account})
+
+        elif 'old_password' in request.POST:
+            old_password = request.POST['old_password']
+
+            if check_password(old_password, account.password):
+                password = request.POST['password']
+                repeated_password = request.POST['repeated_password']
+
+                try:
+
+                    if password != repeated_password:
+                        raise ValidationError("Passwords do not match")
+
+                    if not validators.validate_password(password):
+                        raise ValidationError("Wrong password")
+
+                    account.password = make_password(password)
+                    account.full_clean()
+                    account.save()
+
+                    return render(request, "account.html", {'account': account})
+
+                except ValidationError as error:
+                    errors = list(error.messages)
+                    print('error')
+
+                    if not validators.validate_password(password):
+                        errors.append("Wrong password")
+
+                    if password != repeated_password:
+                        errors.append("Passwords do not match")
+
+                    return render(request, "account.html", {"error_message": errors, 'account': account})
+
+            else:
+                return render(request, "account.html", {"error_message": ['wrong old password'], 'account': account})
+
+        return render(request, 'account.html', {'account': account})
+
+    else:
+        return render(request, 'account.html', {'account': account})
 
 
 def create_account(request):
@@ -95,7 +165,7 @@ def create_account(request):
         postcode = request.POST['postcode']
         password = request.POST['password']
         repeated_password = request.POST['repeated_password']
-        print(password)
+
         account = Account(
             email=email,
             username=username,
@@ -107,7 +177,7 @@ def create_account(request):
             postcode=postcode,
             password=make_password(password),
         )
-        print(account.password)
+
         try:
             account.full_clean()
 
@@ -119,7 +189,7 @@ def create_account(request):
 
             account.save()
 
-            return render(request, "account.html", {"account": account})
+            return redirect("account", username=account.username)
 
         except ValidationError as error:
             errors = list(error.messages)
