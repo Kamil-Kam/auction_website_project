@@ -12,21 +12,14 @@ main page
 <a href="{% url 'add_item' %}">add item</a>
 <br>
 
-{% if account %}
-<a href="{% url 'main_page' %}">Log out</a>
-<br>
-<a href="">Your offers</a>
-<br>
-<a href="{% url 'account.html' %}">Your Account</a>
-<br>
+{% block menu %}
 
-{% else %}
 <a href="{% url 'log_in' %}">Log in</a>
 <br>
 <a href="{% url 'create_account' %}">Create account</a>
 <br>
-{% endif %}
 
+{% endblock %}
 
 </body>
 </html>

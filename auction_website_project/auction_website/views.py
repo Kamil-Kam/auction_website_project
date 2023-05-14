@@ -11,14 +11,14 @@ from django.shortcuts import get_object_or_404
 # Create your views here.
 
 
-def main_page(request, username):
-    account = Account.objects.get(username=username)
+def main_page(request):
 
-    context = {
-        'account': account
-    }
+    return render(request, 'main_page.html')
 
-    return render(request, 'main_page.html', context)
+
+def main_page_logged(request):
+
+    return render(request, 'main_page_logged.html')
 
 
 def categories_view(request):

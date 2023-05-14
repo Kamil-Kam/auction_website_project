@@ -1,0 +1,14 @@
+{% extends "main_page.html" %}
+
+{% block menu %}
+
+
+<a href="{% url 'main_page' %}">Log out</a>
+<br>
+<a href="">Your offers</a>
+<br>
+<a href="{% url 'account' 'username' %}">Your Account</a>
+<br>
+
+
+{% endblock %}

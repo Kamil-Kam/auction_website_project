@@ -11,4 +11,5 @@ urlpatterns = [
     path('single_category/<str:category_name>/', views.single_category, name='single_category'),
     path('item_view', views.item_view, name='item_view'),
     path('create_account', views.create_account, name='create_account'),
+    path('main_page_logged', views.main_page_logged, name='main_page_logged'),
 ]
