@@ -1,19 +1,24 @@
 from django.shortcuts import render, redirect
-from . models import Category, Item, Account
+from .models import Category, Item, Account, Condition
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . forms import NewUAccountForm
 from . import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import get_object_or_404
 
+
 # Create your views here.
 
 
-def main_page(request):
+def main_page(request, username):
+    account = Account.objects.get(username=username)
 
-    return render(request, 'main_page.html')
+    context = {
+        'account': account
+    }
+
+    return render(request, 'main_page.html', context)
 
 
 def categories_view(request):
@@ -39,21 +44,61 @@ def single_category(request, category_name):
 
 def add_item(request):
 
-    return render(request, 'add_item.html')
+    categories = Category.objects.all()
+    conditions = Condition.objects.all()
+
+    if request.method == 'POST':
+
+        description = request.POST['description']
+        title = request.POST['title']
+        price = request.POST['price']
+        category = request.POST['category']
+        condition = request.POST['condition']
+        location = request.POST['location']
+        amount = request.POST['amount']
+
+        item = Item(
+            description=description,
+            title=title,
+            price=price,
+            category=Category.objects.get(category=category),
+            condition=Condition.objects.get(condition=condition),
+            location=location,
+            amount=amount,
+        )
+
+        try:
+            item.full_clean()
+            item.save()
+            message = 'Item added'
+
+            return render(request, "add_item.html", {'categories': categories, 'conditions': conditions,
+                                                      'message': message})
+
+        except ValidationError as error:
+            errors = list(error.messages)
+            print(errors)
+
+            return render(request, "add_item.html", {'categories': categories, 'conditions': conditions,
+                                                     "error_message": errors, 'description': description,
+                                                     'title': title, 'price': price,
+                                                     'category': category, 'condition': condition,
+                                                     'location': location, 'amount': amount})
+
+    context = {'categories': categories, 'conditions': conditions}
+
+    return render(request, 'add_item.html', context)
 
 
 def item_view(request):
-
     return render(request, 'item_view.html')
 
 
 def item_photo(request):
-
     return render(request, 'item_photo.html')
 
 
 def log_in(request):
-
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -64,7 +109,7 @@ def log_in(request):
             if check_password(password, account.password):
                 messages.success(request, "Logged In Sucessfully!")
 
-                return redirect("account", username=username)
+                return redirect("main_page", username=username)
 
             else:
                 messages.error(request, 'Invalid username or password')
@@ -152,7 +197,6 @@ def account(request, username):
 
 
 def create_account(request):
-
     if request.method == 'POST':
 
         email = request.POST['email']
@@ -207,6 +251,3 @@ def create_account(request):
                                                            "street": street, "postcode": postcode})
 
     return render(request, "create_account.html")
-
-
-

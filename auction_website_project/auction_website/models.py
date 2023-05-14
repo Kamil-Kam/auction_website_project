@@ -12,24 +12,11 @@ class Category(models.Model):
         return self.category
 
 
-class Stan(models.Model):
-    stan = models.CharField(max_length=120, null=False, blank=False)
+class Condition(models.Model):
+    condition = models.CharField(max_length=120, null=False, blank=False)
 
     def __str__(self):
-        return self.stan
-
-
-class Item(models.Model):
-    description = models.TextField(max_length=2500)
-    title = models.CharField(max_length=120)
-    price = models.IntegerField(null=True, blank=True)
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
-    stan = models.ForeignKey(Stan, on_delete=models.SET_NULL, null=True)
-    location = models.CharField(max_length=240)
-    amount = models.IntegerField(default=1)
-
-    def __str__(self):
-        return self.title
+        return self.condition
 
 
 class Account(models.Model):
@@ -47,6 +34,24 @@ class Account(models.Model):
     def __str__(self):
         return '%s %s %s' % (self.username, self.firstname, self.surname)
 
+
+class Item(models.Model):
+    description = models.TextField(max_length=2500)
+    title = models.CharField(max_length=120)
+    price = models.IntegerField(null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    condition = models.ForeignKey(Condition, on_delete=models.SET_NULL, null=True)
+    location = models.CharField(max_length=240)
+    amount = models.IntegerField(default=1)
+    # user = models.ForeignKey(Account, on_delete=models.CASCADE)
+    # images = models.ManyToManyField('ItemPhoto')
+
+    def __str__(self):
+        return self.title
+
+
+class ItemPhoto(models.Model):
+    image = models.ImageField()
 
 
 

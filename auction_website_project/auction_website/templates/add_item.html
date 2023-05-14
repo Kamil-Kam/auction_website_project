@@ -6,5 +6,65 @@
 </head>
 <body>
 
+{% if error_message %}
+    <p class="error-message">{{ error_message }}</p>
+{% endif %}
+
+{% if message %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+
+<form action="/action_page.php">
+        {% csrf_token %}
+  <label for="files">Select files:</label>
+  <input type="file" id="files" name="files" multiple><br><br>
+  <input type="submit">
+</form>
+
+<form method='POST'>
+    {% csrf_token %}
+
+
+        <label>description</label>
+    <input required name="description" value="{{ descriptio }}">
+    <br>
+    <label>title</label>
+        <input required name="title" value="{{ title }}">
+    <br>
+    <label>price</label>
+        <input required name="price" value="{{ price }}">
+    <br>
+    <label>category</label>
+
+    <select name="category" required>
+        {% for category in categories %}
+            <option value="{{ category }}">{{ category }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <label>condition</label>
+
+    <select name="condition" required>
+        {% for condition in conditions %}
+            <option value="{{ condition }}">{{ condition }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <label>location</label>
+        <input required name="location" value="{{ location }}">
+    <br>
+    <label>amount</label>
+        <input required name="amount" value="{{ amount }}">
+    <br>
+
+
+     <button type="submit">Submit</button>
+
+
+</form>
+
+
 </body>
 </html>
