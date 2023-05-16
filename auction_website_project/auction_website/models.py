@@ -1,5 +1,6 @@
 from django.db import models
 from . import validators
+from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 
 # Create your models here.
@@ -54,5 +55,20 @@ class ItemPhoto(models.Model):
     image = models.ImageField()
 
 
+class CustomUser(AbstractUser):
+    country = models.CharField(max_length=20, validators=[validators.validate_name])
+    city = models.CharField(max_length=30, validators=[validators.validate_name])
+    street = models.CharField(max_length=30, validators=[validators.validate_name])
+    postcode = models.CharField(max_length=10, validators=[validators.validate_postcode])
+    avatar = models.ImageField(blank=True, null=True)
 
-
+# username: The username used for authentication. It should be unique.
+# password: The hashed password for the user.
+# email: The user's email address. It can be optional or required, depending on your configuration.
+# first_name: The user's first name.
+# last_name: The user's last name.
+# is_active: A boolean flag indicating whether the user account is active or not. Inactive users typically cannot log in.
+# is_staff: A boolean flag indicating whether the user has staff/administrative access to the Django admin interface.
+# is_superuser: A boolean flag indicating whether the user has superuser/administrator privileges.
+# last_login: The timestamp representing the user's last login time.
+# date_joined: The timestamp representing the user's registration or creation time.
