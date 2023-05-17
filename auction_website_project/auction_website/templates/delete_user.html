@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+
+  <h2>Delete User</h2>
+
+  <p>Are you sure you want to delete the user '{{ user.username }}'? This action cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+
+    <label>password</label>
+        <input required name="password" type="password">
+    <br>
+    <button type="submit">Delete</button>
+
+  </form>
+
+<a href="{% url 'main_page' %}">
+    Main page
+</a>
+<br>
+<a href="{% url 'account' %}">
+    Your account
+</a>
+
+</body>
+</html>
