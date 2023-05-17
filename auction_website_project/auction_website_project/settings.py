@@ -138,6 +138,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+#
+AUTH_USER_MODEL = 'auction_website.CustomUser'
 
-AUTH_USER_MODEL = 'accounts.CustomUser'
-
+LOGIN_URL = '/log_in/'

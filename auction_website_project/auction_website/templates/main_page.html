@@ -9,17 +9,37 @@ main page
 <br>
 <a href="{% url 'categories_view' %}">Categories</a>
 <br>
-<a href="{% url 'add_item' %}">add item</a>
-<br>
 
-{% block menu %}
+
+{% if user.is_authenticated %}
+
+    <p>Hello {{ user.username }}</p>
+    <br>
+
+    <a href="{% url 'account' %}">Your account</a>
+    <br>
+
+    <a href="{% url 'your_offers' %}">Your offers</a>
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <button name='log_out' type="submit">Logout</button>
+        <br>
+        <a href="{% url 'add_item' %}">add item</a>
+        <br>
+
+    </form>
+
+{% else %}
 
 <a href="{% url 'log_in' %}">Log in</a>
 <br>
 <a href="{% url 'create_account' %}">Create account</a>
 <br>
 
-{% endblock %}
+{% endif %}
 
 </body>
 </html>

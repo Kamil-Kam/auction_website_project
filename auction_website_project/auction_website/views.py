@@ -1,24 +1,30 @@
 from django.shortcuts import render, redirect
-from .models import Category, Item, Account, Condition
+from .models import Category, Item, Condition, CustomUser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from . import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 
 def main_page(request):
+    user = request.user
+    print('main', user)
 
-    return render(request, 'main_page.html')
+    context = {
+        'user': user
+    }
 
+    if request.method == 'POST':
+        if 'log_out' in request.POST:
+            logout(request)
+            return render(request, 'main_page.html')
 
-def main_page_logged(request):
-
-    return render(request, 'main_page_logged.html')
+    return render(request, 'main_page.html', context)
 
 
 def categories_view(request):
@@ -102,62 +108,58 @@ def log_in(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
+        user = authenticate(username=username, password=password)
 
-        try:
-            account = Account.objects.get(username=username)
+        if user:
+            messages.success(request, "Logged In Sucessfully!")
+            login(request, user)
 
-            if check_password(password, account.password):
-                messages.success(request, "Logged In Sucessfully!")
+            return redirect("main_page")
 
-                return redirect("main_page", username=username)
-
-            else:
-                messages.error(request, 'Invalid username or password')
-
-        except:
+        else:
             messages.error(request, 'Invalid username or password')
 
     return render(request, 'log_in.html')
 
 
-def account(request, username):
-    account = get_object_or_404(Account, username=username)
+def account(request):
+    user = request.user
 
     if request.method == 'POST':
 
         if 'avatar' in request.POST:
-            account.avatar = request.POST['avatar']
-            account.save()
-            print('sdasd')
-            return render(request, "account.html", {'account': account})
+            user.avatar = request.POST['avatar']
+            user.save()
+
+            return render(request, "account.html", {'account': user})
 
         elif 'email' in request.POST:
 
-            account.email = request.POST['email']
-            account.username = request.POST['username']
-            account.firstname = request.POST['firstname']
-            account.surname = request.POST['surname']
-            account.country = request.POST['country']
-            account.city = request.POST['city']
-            account.street = request.POST['street']
-            account.postcode = request.POST['postcode']
+            user.email = request.POST['email']
+            user.username = request.POST['username']
+            user.firstname = request.POST['firstname']
+            user.surname = request.POST['surname']
+            user.country = request.POST['country']
+            user.city = request.POST['city']
+            user.street = request.POST['street']
+            user.postcode = request.POST['postcode']
 
             try:
-                account.full_clean()
-                account.save()
+                user.full_clean()
+                user.save()
 
-                return redirect("account", username=account.username)
+                return redirect("account", username=user.username)
 
             except ValidationError as error:
                 errors = list(error.messages)
                 print('error')
 
-                return render(request, "account.html", {"error_message": errors, 'account': account})
+                return render(request, "account.html", {"error_message": errors, 'account': user})
 
         elif 'old_password' in request.POST:
             old_password = request.POST['old_password']
 
-            if check_password(old_password, account.password):
+            if check_password(old_password, user.password):
                 password = request.POST['password']
                 repeated_password = request.POST['repeated_password']
 
@@ -169,11 +171,11 @@ def account(request, username):
                     if not validators.validate_password(password):
                         raise ValidationError("Wrong password")
 
-                    account.password = make_password(password)
-                    account.full_clean()
-                    account.save()
+                    user.password = make_password(password)
+                    user.full_clean()
+                    user.save()
 
-                    return render(request, "account.html", {'account': account})
+                    return render(request, "account.html", {'account': user})
 
                 except ValidationError as error:
                     errors = list(error.messages)
@@ -185,15 +187,15 @@ def account(request, username):
                     if password != repeated_password:
                         errors.append("Passwords do not match")
 
-                    return render(request, "account.html", {"error_message": errors, 'account': account})
+                    return render(request, "account.html", {"error_message": errors, 'account': user})
 
             else:
-                return render(request, "account.html", {"error_message": ['wrong old password'], 'account': account})
+                return render(request, "account.html", {"error_message": ['wrong old password'], 'account': user})
 
-        return render(request, 'account.html', {'account': account})
+        return render(request, 'account.html', {'account': user})
 
     else:
-        return render(request, 'account.html', {'account': account})
+        return render(request, 'account.html', {'account': user})
 
 
 def create_account(request):
@@ -210,11 +212,11 @@ def create_account(request):
         password = request.POST['password']
         repeated_password = request.POST['repeated_password']
 
-        account = Account(
+        user = CustomUser(
             email=email,
             username=username,
-            firstname=firstname,
-            surname=surname,
+            first_name=firstname,
+            last_name=surname,
             country=country,
             city=city,
             street=street,
@@ -223,7 +225,7 @@ def create_account(request):
         )
 
         try:
-            account.full_clean()
+            user.full_clean()
 
             if password != repeated_password:
                 raise ValidationError("Passwords do not match")
@@ -231,9 +233,9 @@ def create_account(request):
             if not validators.validate_password(password):
                 raise ValidationError("Wrong password")
 
-            account.save()
+            user.save()
 
-            return redirect("account", username=account.username)
+            return redirect("account", username=user.username)
 
         except ValidationError as error:
             errors = list(error.messages)
@@ -251,3 +253,9 @@ def create_account(request):
                                                            "street": street, "postcode": postcode})
 
     return render(request, "create_account.html")
+
+
+def your_offers(request):
+
+    return render(request, "your_offers.html")
+
