@@ -141,4 +141,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #
 AUTH_USER_MODEL = 'auction_website.CustomUser'
 
-LOGIN_URL = '/log_in/'
+LOGIN_URL = 'log_in'

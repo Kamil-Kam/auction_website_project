@@ -7,22 +7,17 @@
 </head>
 <body>
 
-<div>
-    ACCOUNT
-</div>
 
-
-
-{% if account.avatar %}
-     <p><img src="{{ account.avatar.url }}" class="rounded" alt="image not found"></p>
+{% if user.avatar %}
+     <p><img src="{{ user.avatar.url }}" class="rounded" alt="image not found"></p>
 {% else %}
      <p><img src="{% static 'avatar_default.jpg' %}" class="rounded" alt="image not found"></p>
 {% endif %}
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
 
-    <div><label>avatar</label></div>
+    <div><label>Choose avatar</label></div>
         <input name="avatar" type="file" multiple class="form-control-file" accept="image/jpeg, image/png">
     <br>
 
@@ -32,28 +27,28 @@
 <form method="POST">
     {% csrf_token %}
         <label>email</label>
-    <input required name="email" value="{{ account.email }}">
+    <input required name="email" value="{{ user.email }}">
     <br>
     <label>username</label>
-        <input required name="username" value="{{ account.username }}">
+        <input required name="username" value="{{ user.username }}">
     <br>
     <label>firstname</label>
-        <input required name="firstname" value="{{ account.firstname }}">
+        <input required name="firstname" value="{{ user.first_name }}">
     <br>
     <label>surname</label>
-        <input required name="surname" value="{{ account.surname }}">
+        <input required name="surname" value="{{ user.last_name }}">
     <br>
     <label>country</label>
-        <input required name="country" value="{{ account.country }}">
+        <input required name="country" value="{{ user.country }}">
     <br>
     <label>city</label>
-        <input required name="city" value="{{ account.city }}">
+        <input required name="city" value="{{ user.city }}">
     <br>
     <label>street</label>
-        <input required name="street" value="{{ account.street }}">
+        <input required name="street" value="{{ user.street }}">
     <br>
     <label>postcode</label>
-        <input required name="postcode" value="{{ account.postcode }}">
+        <input required name="postcode" value="{{ user.postcode }}">
     <br>
 
 
@@ -63,7 +58,8 @@
 
 <form method="POST">
     {% csrf_token %}
-       <label>old password</label>
+
+    <label>old password</label>
         <input required name="old_password" type="password">
     <br>
     <label>password</label>
@@ -72,12 +68,16 @@
     <label>repeated_password</label>
         <input required name="repeated_password" type="password">
     <br>
-    <p>{{ account.id }}</p>
-
 
      <button type="submit">Submit</button>
 
 </form>
+
+
+<a href="{% url 'delete_user' %}">
+    <button>Delete Account</button>
+</a>
+
 
 {% if error_message %}
     <p class="error-message">{{ error_message }}</p>
