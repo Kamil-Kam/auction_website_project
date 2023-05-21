@@ -15,9 +15,13 @@ from django.views.generic.edit import CreateView
 
 def main_page(request):
     user = request.user
+    items = Item.objects.all()
+    item_photos = ItemPhoto.objects.all()
 
     context = {
-        'user': user
+        'user': user,
+        'items': items,
+        'item_photos': item_photos,
     }
 
     if request.method == 'POST':
@@ -66,6 +70,7 @@ def add_item(request):
         amount = request.POST['amount']
 
         images = request.FILES.getlist('images')
+        print(images)
 
         item = Item(
             description=description,
@@ -85,8 +90,12 @@ def add_item(request):
 
             if images:
                 for image in images:
+                    print(image)
                     item_photo = ItemPhoto.objects.create(image=image)
+                    print(item_photo)
+                    print(item.images)
                     item.images.add(item_photo)
+                    print(item.images)
 
                 return render(request, "add_item.html", {'categories': categories, 'conditions': conditions,
                                                             'message': message})
