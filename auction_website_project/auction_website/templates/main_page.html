@@ -42,5 +42,28 @@ main page
 
 {% endif %}
 
+{% if items %}
+
+    {% for item in items %}
+
+        <p>Title: {{ item.title }}</p>
+        <p>Description: {{ item.description }}</p>
+        <p>Price: {{ item.price }}</p>
+        <p>Category: {{ item.category }}</p>
+        <p>Condition: {{ iteme.condition }}</p>
+        <p>Location: {{ item.location }} </p>
+        <p>Seller: {{ item.user_seller }}</p>
+
+        {% for image in item.images.all %}
+            <p>{{ image }}</p>
+            <img src="{{ image.image.url }}" alt="Item Photo">
+        {% endfor %}
+        <br>
+
+    {% endfor %}
+
+{% endif %}
+
+
 </body>
 </html>
