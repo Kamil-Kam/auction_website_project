@@ -15,13 +15,11 @@ from django.views.generic.edit import CreateView
 
 def main_page(request):
     user = request.user
-    items = Item.objects.all()
-    item_photos = ItemPhoto.objects.all()
+    items = Item.objects.order_by('-created_data')[:2]
 
     context = {
         'user': user,
         'items': items,
-        'item_photos': item_photos,
     }
 
     if request.method == 'POST':
@@ -277,8 +275,14 @@ def create_account(request):
 
 @login_required
 def your_offers(request):
+    user = request.user
+    items = Item.objects.filter(user_seller=user)
 
-    return render(request, "your_offers.html")
+    context = {
+        'items': items
+    }
+
+    return render(request, "your_offers.html", context)
 
 
 @login_required
@@ -301,3 +305,55 @@ def delete_user(request):
     return render(request, 'delete_user.html')
 
 
+@login_required
+def delete_item(request, item):
+
+    if request.method == 'POST':
+        item.delete()
+
+        return redirect('your_offers')
+
+    return render(request, 'delete_item.html')
+
+
+@login_required
+def edit_item(request, item_id):
+    item = Item.objects.get(id=item_id)
+    categories = Category.objects.all()
+    conditions = Condition.objects.all()
+
+    if request.method == 'POST':
+
+        item.description = request.POST['description']
+        item.title = request.POST['title']
+        item.price = request.POST['price']
+        item.category = request.POST['category']
+        item.condition = request.POST['condition']
+        item.location = request.POST['location']
+        item.amount = request.POST['amount']
+
+        images = request.FILES.getlist('images')
+
+        try:
+            item.full_clean()
+            item.save()
+            message = 'Item edited'
+
+            if images:
+                for image in images:
+
+                    item_photo = ItemPhoto.objects.create(image=image)
+                    item.images.add(item_photo)
+
+                return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
+                                                            'message': message})
+
+        except ValidationError as error:
+            errors = list(error.messages)
+
+            return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
+                                                     "error_message": errors})
+
+    context = {'categories': categories, 'conditions': conditions, 'item': item}
+
+    return render(request, 'edit_item.html', context)
