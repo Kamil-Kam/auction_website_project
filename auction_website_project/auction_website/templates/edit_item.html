@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% if error_message %}
+    <p class="error-message">{{ error_message }}</p>
+{% endif %}
+
+{% if message %}
+    <p class="message">{{ message }}</p>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+  <label for="images">Select images:</label>
+  <input type="file" id="images" name="images" multiple><br><br>
+
+
+
+        <label>description</label>
+    <input required name="description" value="{{ item.description }}">
+    <br>
+    <label>title</label>
+        <input required name="title" value="{{ item.title }}">
+    <br>
+    <label>price</label>
+        <input required name="price" value="{{ item.price }}">
+    <br>
+    <label>category</label>
+
+    <select name="category" required>
+        {% for category in categories %}
+            <option value="{{ category }}">{{ item.category }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <label>condition</label>
+
+    <select name="condition" required>
+        {% for condition in conditions %}
+            <option value="{{ condition }}">{{ item.condition }}</option>
+        {% endfor %}
+    </select>
+
+    <br>
+    <label>location</label>
+        <input required name="location" value="{{ item.location }}">
+    <br>
+    <label>amount</label>
+        <input required name="amount" value="{{ item.amount }}">
+    <br>
+
+
+     <button type="submit">Submit</button>
+
+
+</form>
+
+
+
+</body>
+</html>
