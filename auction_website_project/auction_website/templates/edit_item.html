@@ -6,6 +6,30 @@
 </head>
 <body>
 
+<a href="{% url 'main_page' %}">
+    <button>Main page</button>
+</a>
+
+<a href="{% url 'categories_view' %}">
+    <button>Categories</button>
+</a>
+
+<a href="{% url 'your_offers' %}">
+    <button>Your offers</button>
+</a>
+
+<a href="{% url 'account' %}">
+    <button>Your account</button>
+</a>
+
+<form method="POST" style="display: inline;">
+    {% csrf_token %}
+
+    <button name='log_out' type="submit">Logout</button>
+
+</form>
+<br>
+
 {% if error_message %}
     <p class="error-message">{{ error_message }}</p>
 {% endif %}
@@ -14,9 +38,13 @@
     <p class="message">{{ message }}</p>
 {% endif %}
 
+{% for image in item.images.all %}
+    <img width="20%" src="{{ image.image.url }}" alt="Item Photo">
+{% endfor %}
+
 <form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
-  <label for="images">Select images:</label>
+  <label for="images">Add images:</label>
   <input type="file" id="images" name="images" multiple><br><br>
 
 

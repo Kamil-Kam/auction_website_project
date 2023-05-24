@@ -5,6 +5,15 @@
     <title>Title</title>
 </head>
 <body>
+
+<a href="{% url 'main_page' %}">
+<button>Main page</button>
+</a>
+
+<a href="{% url 'categories_view' %}">
+<button>Categories</button>
+</a>
+
 <form method="post">
   {% csrf_token %}
   <label for="username">Username:</label>
@@ -24,8 +33,9 @@
     </ul>
 {% endif %}
 
-<a href="{% url 'create_account' %}">Create account</a>
-
+<a href="{% url 'create_account' %}">
+<button>Create account</button>
+</a>
 
 
 </body>

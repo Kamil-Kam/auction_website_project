@@ -6,6 +6,23 @@
 </head>
 <body>
 
+<a href="{% url 'main_page' %}">
+    <button>Main page</button>
+</a>
+
+<a href="{% url 'your_offers' %}">
+    <button>Your offers</button>
+</a>
+
+<a href="{% url 'add_item' %}">
+    <button>Add item</button>
+</a>
+
+<a href="{% url 'account' %}">
+    <button>Your account</button>
+</a>
+<br>
+
 {% if message %}
     <p>{{ message }}</p>
 {% endif %}
@@ -22,14 +39,6 @@
     <button type="submit">Delete</button>
 
   </form>
-
-<a href="{% url 'main_page' %}">
-    Main page
-</a>
-<br>
-<a href="{% url 'account' %}">
-    Your account
-</a>
 
 </body>
 </html>

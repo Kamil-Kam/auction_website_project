@@ -88,12 +88,8 @@ def add_item(request):
 
             if images:
                 for image in images:
-                    print(image)
                     item_photo = ItemPhoto.objects.create(image=image)
-                    print(item_photo)
-                    print(item.images)
                     item.images.add(item_photo)
-                    print(item.images)
 
                 return render(request, "add_item.html", {'categories': categories, 'conditions': conditions,
                                                             'message': message})
@@ -357,3 +353,15 @@ def edit_item(request, item_id):
     context = {'categories': categories, 'conditions': conditions, 'item': item}
 
     return render(request, 'edit_item.html', context)
+
+
+@login_required
+def delete_photo(request, item):
+
+    if request.method == 'POST':
+        item.delete()
+
+        return redirect('edit_item')
+
+    return render(request, 'delete_photo.html')
+

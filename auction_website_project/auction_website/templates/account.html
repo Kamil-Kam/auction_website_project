@@ -8,6 +8,35 @@
 <body>
 
 
+<a href="{% url 'main_page' %}">
+    <button>Main page</button>
+</a>
+
+<a href="{% url 'categories_view' %}">
+<button>Categories</button>
+</a>
+
+<a href="{% url 'your_offers' %}">
+    <button>Your offers</button>
+</a>
+
+<a href="{% url 'add_item' %}">
+    <button>Add item</button>
+</a>
+
+<form method="POST" style="display: inline;">
+    {% csrf_token %}
+
+    <button name='log_out' type="submit">Logout</button>
+
+</form>
+
+<a href="{% url 'delete_user' %}">
+    <button>Delete Account</button>
+</a>
+
+<br>
+
 {% if user.avatar %}
      <p><img src="{{ user.avatar.url }}" class="rounded" alt="image not found"></p>
 {% else %}
@@ -73,14 +102,9 @@
 
 </form>
 
-
-<a href="{% url 'delete_user' %}">
-    <button>Delete Account</button>
-</a>
-
-
 {% if error_message %}
     <p class="error-message">{{ error_message }}</p>
 {% endif %}
+
 </body>
 </html>

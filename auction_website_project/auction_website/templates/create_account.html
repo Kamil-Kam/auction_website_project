@@ -6,6 +6,18 @@
 </head>
 <body>
 
+<a href="{% url 'main_page' %}">
+<button>Main Page</button>
+</a>
+
+<a href="{% url 'categories_view' %}">
+<button>Categories</button>
+</a>
+
+<a href="{% url 'log_in' %}">
+<button>Log in</button>
+</a>
+
 {% if error_message %}
     <p>{{ error_message }}</p>
 {% endif %}
