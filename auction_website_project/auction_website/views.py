@@ -302,14 +302,18 @@ def delete_user(request):
 
 
 @login_required
-def delete_item(request, item):
+def delete_item(request, item_id):
+    item = Item.objects.get(id=item_id)
+    context = {
+        'item': item
+    }
 
     if request.method == 'POST':
         item.delete()
 
         return redirect('your_offers')
 
-    return render(request, 'delete_item.html')
+    return render(request, 'delete_item.html', context)
 
 
 @login_required

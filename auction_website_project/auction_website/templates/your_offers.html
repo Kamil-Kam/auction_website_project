@@ -48,7 +48,15 @@
         {% endfor %}
         <br>
 
-        <a href="{% url 'edit_item' item.id %}">Edit item</a>
+        <a href="{% url 'edit_item' item.id %}">
+            <button>Edit item</button>
+        </a>
+        <br>
+
+        <a href="{% url 'delete_item' item.id %}">
+            <button>Delete item</button>
+        </a>
+        <br>
 
     {% endfor %}
 
