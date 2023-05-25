@@ -108,8 +108,14 @@ def add_item(request):
     return render(request, 'add_item.html', context)
 
 
-def item_view(request):
-    return render(request, 'item_view.html')
+def item_view(request, item_id):
+    item = Item.objects.get(id=item_id)
+
+    context = {
+        'item': item
+    }
+
+    return render(request, 'item_view.html', context)
 
 
 def item_photo(request):
@@ -354,7 +360,9 @@ def edit_item(request, item_id):
             return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
                                                      "error_message": errors})
 
-    context = {'categories': categories, 'conditions': conditions, 'item': item}
+    context = {
+        'categories': categories, 'conditions': conditions, 'item': item
+    }
 
     return render(request, 'edit_item.html', context)
 

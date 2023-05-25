@@ -59,13 +59,12 @@
 
     {% for item in items %}
 
-        <p>Title: {{ item.title }}</p>
-        <p>Description: {{ item.description }}</p>
+        <a href="{% url 'item_view' item.id %}">Title: {{ item.title }}</a>
+        <br>
         <p>Price: {{ item.price }}</p>
         <p>Category: {{ item.category }}</p>
         <p>Condition: {{ item.condition }}</p>
         <p>Location: {{ item.location }} </p>
-        <p>Seller: {{ item.user_seller }}</p>
 
         {% for image in item.images.all %}
             <img width="20%" src="{{ image.image.url }}" alt="Item Photo">

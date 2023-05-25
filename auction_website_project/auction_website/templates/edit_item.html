@@ -61,8 +61,9 @@
     <label>category</label>
 
     <select name="category" required>
+        <option value="{{ category }}">{{ item.category }}</option>
         {% for category in categories %}
-            <option value="{{ category }}">{{ item.category }}</option>
+            <option value="{{ category }}">{{ category }}</option>
         {% endfor %}
     </select>
 
@@ -70,8 +71,9 @@
     <label>condition</label>
 
     <select name="condition" required>
+        <option value="{{ condition }}">{{ item.condition }}</option>
         {% for condition in conditions %}
-            <option value="{{ condition }}">{{ item.condition }}</option>
+            <option value="{{ condition }}">{{ condition }}</option>
         {% endfor %}
     </select>
 
