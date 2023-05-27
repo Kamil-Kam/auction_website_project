@@ -68,7 +68,6 @@ def add_item(request):
         amount = request.POST['amount']
 
         images = request.FILES.getlist('images')
-        print(images)
 
         item = Item(
             description=description,
