@@ -42,48 +42,50 @@
 {% csrf_token %}
 
     <label>Select main image:</label>
-    <input type="file" name="main_image" class="form-control-file" accept="image/jpeg, image/png"><br><br>
+        <input type="file" name="main_image" class="form-control-file" accept="image/jpeg, image/png">
+    <br>
 
     <label>Select other images:</label>
-    <input type="file" name="images" multiple class="form-control-file" accept="image/jpeg, image/png"><br><br>
-
-        <label>description</label>
-    <input required name="description" value="{{ description }}">
+        <input type="file" name="images" multiple class="form-control-file" accept="image/jpeg, image/png">
     <br>
+
     <label>title</label>
         <input required name="title" value="{{ title }}">
     <br>
+
     <label>price</label>
         <input required name="price" value="{{ price }}">
     <br>
-    <label>category</label>
 
+    <label>category</label>
     <select name="category" required>
         {% for category in categories %}
             <option value="{{ category }}">{{ category }}</option>
         {% endfor %}
     </select>
-
     <br>
-    <label>condition</label>
 
+    <label>condition</label>
     <select name="condition" required>
         {% for condition in conditions %}
             <option value="{{ condition }}">{{ condition }}</option>
         {% endfor %}
     </select>
-
     <br>
+
+    <label>description</label>
+        <input required name="description" value="{{ description }}">
+    <br>
+
     <label>location</label>
         <input required name="location" value="{{ location }}">
     <br>
+
     <label>amount</label>
         <input required name="amount" value="{{ amount }}">
     <br>
 
-
-     <button type="submit">Submit</button>
-
+    <button type="submit">Submit</button>
 
 </form>
 

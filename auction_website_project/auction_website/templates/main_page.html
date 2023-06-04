@@ -61,8 +61,7 @@
 
     {% for item in items %}
 
-        <a href="{% url 'item_view' item.id %}">Title: {{ item.title }}</a>
-        <br>
+        <p><a href="{% url 'item_view' item.id %}">Title: {{ item.title }}</a></p>
         <p>Price: {{ item.price }}</p>
         <p>Condition: {{ item.condition }}</p>
 
@@ -72,6 +71,7 @@
              <p><img width="20%" src="{% static 'item_default.jpg' %}" class="rounded" alt="image not found"></p>
         {% endif %}
 
+        <br>
         <br>
 
     {% endfor %}

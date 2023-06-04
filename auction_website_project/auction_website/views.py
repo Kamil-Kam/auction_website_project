@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView
 
 def main_page(request):
     user = request.user
-    items = list(reversed(Item.objects.order_by('-created_data')))[:4]
+    items = list(reversed(Item.objects.order_by('-created_data')))[:5]
 
     context = {
         'user': user,
@@ -330,52 +330,61 @@ def edit_item(request, item_id):
     conditions = Condition.objects.all()
 
     if request.method == 'POST':
-
-        item.description = request.POST['description']
-        item.title = request.POST['title']
-        item.price = request.POST['price']
-        item.category = request.POST['category']
-        item.condition = request.POST['condition']
-        item.location = request.POST['location']
-        item.amount = request.POST['amount']
-
-        images = request.FILES.getlist('images')
-
-        try:
-            item.full_clean()
+        if 'delete_main_image' in request.POST:
+            item.main_image.delete()
             item.save()
-            message = 'Item edited'
 
-            if images:
-                for image in images:
+            context = {
+                'categories': categories, 'conditions': conditions, 'item': item
+            }
 
-                    item_photo = ItemPhoto.objects.create(image=image)
-                    item.images.add(item_photo)
+            return render(request, "edit_item.html", context)
+
+        else:
+            item.description = request.POST['description']
+            item.title = request.POST['title']
+            item.price = request.POST['price']
+            item.category = Category.objects.get(category=request.POST['category'])
+            item.condition = Condition.objects.get(condition=request.POST['condition'])
+            item.location = request.POST['location']
+            item.amount = request.POST['amount']
+
+            if 'main_image' in request.FILES:
+                item.main_image = request.FILES['main_image']
+
+            images = request.FILES.getlist('images')
+
+            try:
+                item.full_clean()
+                item.save()
+                message = 'Item edited'
+
+                if images:
+                    for image in images:
+
+                        item_photo = ItemPhoto.objects.create(image=image)
+                        item.images.add(item_photo)
+
+                    return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
+                                                                'message': message, 'item': item})
+
+            except ValidationError as error:
+                errors = list(error.messages)
 
                 return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
-                                                            'message': message})
-
-        except ValidationError as error:
-            errors = list(error.messages)
-
-            return render(request, "edit_item.html", {'categories': categories, 'conditions': conditions,
-                                                     "error_message": errors})
+                                                         "error_message": errors, 'item': item})
 
     context = {
         'categories': categories, 'conditions': conditions, 'item': item
     }
-
     return render(request, 'edit_item.html', context)
 
 
 @login_required
-def delete_photo(request, photo_id):
+def delete_photo(request, item_id, photo_id):
     photo = ItemPhoto.objects.get(id=photo_id)
+    photo.delete()
 
-    if request.method == 'POST':
-        photo.delete()
+    return redirect('edit_item', item_id=item_id)
 
-        return redirect('edit_item')
-
-    return render(request, 'delete_photo.html')
 

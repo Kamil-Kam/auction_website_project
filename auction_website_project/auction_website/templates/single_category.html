@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,19 +65,22 @@
 
     {% for item in items %}
 
-        <a href="{% url 'item_view' item.id %}">Title: {{ item.title }}</a>
-        <br>
+        <p><a href="{% url 'item_view' item.id %}">Title: {{ item.title }}</a></p>
         <p>Price: {{ item.price }}</p>
         <p>Condition: {{ item.condition }}</p>
-        <p>Location: {{ item.location }} </p>
 
-        {% for image in item.images.all %}
-            <img width="20%" src="{{ image.image.url }}" alt="Item Photo">
-        {% endfor %}
+        {% if item.main_image %}
+             <p><img width="20%" src="{{ item.main_image.url }}" class="rounded" alt="image not found"></p>
+        {% else %}
+             <p><img width="20%" src="{% static 'item_default.jpg' %}" class="rounded" alt="image not found"></p>
+        {% endif %}
+
+        <br>
         <br>
 
     {% endfor %}
-
+{% else %}
+<p>No items</p>
 {% endif %}
 
 </body>
