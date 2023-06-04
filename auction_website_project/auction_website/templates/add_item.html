@@ -40,13 +40,15 @@
 
 <form method="POST" enctype="multipart/form-data">
 {% csrf_token %}
-  <label for="images">Select images:</label>
-  <input type="file" id="images" name="images" multiple><br><br>
 
+    <label>Select main image:</label>
+    <input type="file" name="main_image" class="form-control-file" accept="image/jpeg, image/png"><br><br>
 
+    <label>Select other images:</label>
+    <input type="file" name="images" multiple class="form-control-file" accept="image/jpeg, image/png"><br><br>
 
         <label>description</label>
-    <input required name="description" value="{{ descriptio }}">
+    <input required name="description" value="{{ description }}">
     <br>
     <label>title</label>
         <input required name="title" value="{{ title }}">

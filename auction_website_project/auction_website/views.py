@@ -15,7 +15,7 @@ from django.views.generic.edit import CreateView
 
 def main_page(request):
     user = request.user
-    items = Item.objects.order_by('-created_data')[:2]
+    items = list(reversed(Item.objects.order_by('-created_data')))[:4]
 
     context = {
         'user': user,
@@ -66,6 +66,7 @@ def add_item(request):
         condition = request.POST['condition']
         location = request.POST['location']
         amount = request.POST['amount']
+        main_image = request.FILES.get('main_image')
 
         images = request.FILES.getlist('images')
 
@@ -77,7 +78,8 @@ def add_item(request):
             condition=Condition.objects.get(condition=condition),
             location=location,
             amount=amount,
-            user_seller=user
+            user_seller=user,
+            main_image=main_image,
         )
 
         try:
@@ -367,10 +369,11 @@ def edit_item(request, item_id):
 
 
 @login_required
-def delete_photo(request, item):
+def delete_photo(request, photo_id):
+    photo = ItemPhoto.objects.get(id=photo_id)
 
     if request.method == 'POST':
-        item.delete()
+        photo.delete()
 
         return redirect('edit_item')
 

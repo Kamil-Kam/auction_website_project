@@ -8,5 +8,5 @@ register = template.Library()
 def get_newest_offers(all_offers):
     offers = all_offers.order_by('created_data')
 
-    return mark_safe(offers[:1])
+    return mark_safe(offers[:4])
 

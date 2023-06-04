@@ -41,6 +41,7 @@ class Item(models.Model):
     user_seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     images = models.ManyToManyField('ItemPhoto', blank=True)
     created_data = models.TimeField(auto_now_add=True, blank=True, null=True)
+    main_image = ResizedImageField(size=[1024, 1024], blank=True, null=True)
 
     def __str__(self):
         return self.title
