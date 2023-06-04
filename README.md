@@ -12,7 +12,8 @@ Frontend:<br />
 TODO:
  - implement email confirmation during account creation
  - implement password reset via email
- - add main photo in item
+ - add comments available
+ - add grading system
  - 
 DONE:
  - create user registration and verification system
@@ -23,6 +24,7 @@ DONE:
  - add categories
  - enable edit and delete items
  - add items views
+ - add main photo in item
  - 
 #### Frontend:
 in progress
