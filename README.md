@@ -14,6 +14,7 @@ TODO:
  - implement password reset via email
  - add comments available
  - add grading system
+ - add archive
  - 
 DONE:
  - create user registration and verification system
