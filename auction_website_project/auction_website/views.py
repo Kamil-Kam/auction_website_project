@@ -5,12 +5,39 @@ from django.contrib import messages
 from . import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import CreateView
-
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import *
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
+
+
+class CategoryList(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [AllowAny]
+
+
+class ConditionList(generics.ListAPIView):
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
+    permission_classes = [AllowAny]
+
+
+class CustomUserList(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [AllowAny]
+
+
+class ItemList(generics.ListAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemSerializer
+    permission_classes = [AllowAny]
 
 
 def main_page(request):
@@ -28,6 +55,38 @@ def main_page(request):
             return render(request, 'main_page.html')
 
     return render(request, 'main_page.html', context)
+
+
+class MainPageAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    @staticmethod
+    def get(request):
+        user = request.user
+        items = list(reversed(Item.objects.order_by('-created_data')))[:5]
+        serializer = ItemSerializer(items, many=True)
+
+        if user.is_authenticated:
+
+            context = {
+                'user': user.username,
+                'items': serializer.data,
+            }
+        else:
+            context = {
+                'user': None,
+                'items': serializer.data,
+            }
+
+        return Response(context, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        if 'log_out' in request.POST:
+            logout(request)
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def categories_view(request):

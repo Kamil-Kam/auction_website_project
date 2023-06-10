@@ -1,5 +1,7 @@
 from . import views
 from django.urls import path
+from django.urls import path
+from .views import *
 
 
 urlpatterns = [
@@ -16,5 +18,12 @@ urlpatterns = [
     path('delete_user', views.delete_user, name='delete_user'),
     path('delete_item/<int:item_id>/', views.delete_item, name='delete_item'),
     path('edit_item/<int:item_id>/', views.edit_item, name='edit_item'),
-    path('delete_photo/<int:item_id>/<int:photo_id>/', views.delete_photo, name='delete_photo')
+    path('delete_photo/<int:item_id>/<int:photo_id>/', views.delete_photo, name='delete_photo'),
+
+    path('api/categories/', CategoryList.as_view(), name='category-list'),
+    path('api/conditions/', ConditionList.as_view(), name='condition-list'),
+    path('api/users/', CustomUserList.as_view(), name='user-list'),
+    path('api/items/', ItemList.as_view(), name='item-list'),
+
+    path('api/main_page/', MainPageAPIView.as_view(), name='main_page'),
 ]
