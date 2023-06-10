@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 
@@ -66,17 +66,10 @@ class MainPageAPIView(APIView):
         items = list(reversed(Item.objects.order_by('-created_data')))[:5]
         serializer = ItemSerializer(items, many=True)
 
-        if user.is_authenticated:
-
-            context = {
-                'user': user.username,
-                'items': serializer.data,
-            }
-        else:
-            context = {
-                'user': None,
-                'items': serializer.data,
-            }
+        context = {
+            'user': user.username if user.is_authenticated else None,
+            'items': serializer.data,
+        }
 
         return Response(context, status=status.HTTP_200_OK)
 
@@ -97,6 +90,14 @@ def categories_view(request):
     }
 
     return render(request, 'categories_view.html', context)
+
+
+class CategoriesAPIView(APIView):
+    @staticmethod
+    def get(request):
+        categories = Category.objects.all()
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 def single_category(request, category_name):

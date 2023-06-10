@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/items/', ItemList.as_view(), name='item-list'),
 
     path('api/main_page/', MainPageAPIView.as_view(), name='main_page'),
+    path('api/categories/', CategoriesAPIView.as_view(), name='categories')
 ]
