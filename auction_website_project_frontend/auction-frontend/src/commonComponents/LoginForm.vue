@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { reactive } from "vue";
-import Button from "./common/Button.vue";
+import Button from "./Button.vue";
 
 const formData = reactive({
   login: "",
