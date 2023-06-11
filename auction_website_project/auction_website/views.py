@@ -43,6 +43,7 @@ class ItemList(generics.ListAPIView):
 def main_page(request):
     user = request.user
     items = list(reversed(Item.objects.order_by('-created_data')))[:5]
+    print('username', user.username)
 
     context = {
         'user': user,
@@ -63,6 +64,7 @@ class MainPageAPIView(APIView):
     @staticmethod
     def get(request):
         user = request.user
+        print('username', user.username)
         items = list(reversed(Item.objects.order_by('-created_data')))[:5]
         serializer = ItemSerializer(items, many=True)
 
@@ -334,6 +336,26 @@ def create_account(request):
                                                            "street": street, "postcode": postcode})
 
     return render(request, "create_account.html")
+
+
+class CreateAccountAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = CustomUserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            password = serializer.validated_data.get('password')
+            repeated_password = serializer.validated_data.pop('repeated_password')
+
+            if password != repeated_password:
+                return Response({"error_message": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = serializer.save(password=make_password(password))
+
+            return Response({"user_id": user.id}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @login_required
