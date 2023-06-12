@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Category, Condition, CustomUser, Item, ItemPhoto
+from django.contrib.auth import authenticate, login
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -35,14 +36,14 @@ class ItemSerializer(serializers.ModelSerializer):
                   'amount', 'user_seller', 'images', 'created_data', 'main_image']
 
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    repeated_password = serializers.CharField(write_only=True)
+class UserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField()
+    repeated_password = serializers.CharField()
 
     class Meta:
         model = CustomUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'country', 'city', 'street', 'postcode', 'password',
-                  'repeated_password']
+        fields = ['email', 'username', 'first_name', 'last_name', 'country',
+                  'city', 'street', 'postcode', 'password', 'repeated_password']
 
     def validate(self, attrs):
         password = attrs.get('password')
@@ -62,3 +63,22 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        user = authenticate(username=username, password=password)
+
+        if user:
+            attrs['user'] = user
+            return attrs
+        else:
+            raise serializers.ValidationError("Invalid username or password.")
+
+
