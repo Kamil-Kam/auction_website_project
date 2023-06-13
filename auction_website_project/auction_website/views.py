@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework import generics
 from rest_framework import status
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -44,20 +43,19 @@ class Categories(APIView):
 class ItemsNewest(APIView):
     permission_classes = [AllowAny]
 
-    @staticmethod
-    def get(request):
+    def get(self, request):
         items = list(reversed(Item.objects.order_by('-created_data')))[:5]
-        serializer = ItemSerializer(items, many=True)
+        serializer = ItemsSerializer(items, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class SingleCategory(APIView):
+class SingleCategoryItems(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, category_name):
         items = Item.objects.filter(category__category=category_name)
-        serializer = ItemSerializer(items, many=True)
+        serializer = ItemsSerializer(items, many=True)
 
         return Response(serializer.data)
 
