@@ -1,11 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework import status, viewsets
+from rest_framework import status
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
+
 
 # Create your views here.
 
@@ -129,59 +129,4 @@ class UserLogout(APIView):
     def post(self, request):
         logout(request)
         return Response({'detail': 'Logout successful.'})
-
-
-class UserAvatar(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser]
-
-    def get(self, request):
-
-        user = request.user
-        return Response(user.username)
-
-    def post(self, request):
-        serializer = AvatarSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = request.user
-            user.avatar = serializer.validated_data['avatar']
-            user.save()
-            return Response({'detail': 'Avatar uploaded successfully'})
-
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request):
-        user = request.user
-
-        if user.avatar:
-            user.avatar.delete()
-            user.avatar = None
-            user.save()
-
-        return Response({'detail': 'Avatar deleted successfully'})
-
-
-class ItemAddView(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser]
-
-    def post(self, request):
-        serializer = ItemCreateSerializer(data=request.data, context={'request': request})
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'detail': 'Item added'}, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ItemView(APIView):
-
-    def get(self, request, item_id):
-        item = Item.objects.get(id=item_id)
-        serializer = ItemViewSerializer(item)
-        return Response(serializer.data)
-
-
 
