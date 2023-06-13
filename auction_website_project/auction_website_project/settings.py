@@ -139,7 +139,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #
 AUTH_USER_MODEL = 'auction_website.CustomUser'
 
-LOGIN_URL = 'log_in'
+# LOGIN_URL = 'log_in'
+
+LOGIN_URL = 'api/user/login/'
 
 
 REST_FRAMEWORK = {

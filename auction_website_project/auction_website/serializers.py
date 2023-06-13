@@ -3,22 +3,16 @@ from .models import Category, Condition, CustomUser, Item, ItemPhoto
 from django.contrib.auth import authenticate, login
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'category']
 
 
-class ConditionSerializer(serializers.ModelSerializer):
+class ConditionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condition
         fields = ['id', 'condition']
-
-
-class CustomUserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'country', 'city', 'street', 'postcode', 'avatar']
 
 
 class ItemPhotoSerializer(serializers.ModelSerializer):
@@ -27,7 +21,7 @@ class ItemPhotoSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
-class ItemSerializer(serializers.ModelSerializer):
+class ItemsSerializer(serializers.ModelSerializer):
     images = ItemPhotoSerializer(many=True)
 
     class Meta:
@@ -58,8 +52,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         user = CustomUser(**validated_data)
         user.full_clean()
-
-        user.set_password(validated_data['password'])
         user.save()
 
         return user
@@ -67,7 +59,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
-    password = serializers.CharField(max_length=128, write_only=True)
+    password = serializers.CharField(max_length=128)
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -78,7 +70,15 @@ class UserLoginSerializer(serializers.Serializer):
         if user:
             attrs['user'] = user
             return attrs
+
         else:
             raise serializers.ValidationError("Invalid username or password.")
 
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'username', 'first_name', 'last_name', 'country',
+                  'city', 'street', 'postcode']
 

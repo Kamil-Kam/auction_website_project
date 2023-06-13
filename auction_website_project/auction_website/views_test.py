@@ -1,17 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import Category, Item, Condition, CustomUser, ItemPhoto
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import logout
 from django.contrib import messages
 from . import validators
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.decorators import login_required
-from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from .serializers import *
-from rest_framework.permissions import AllowAny, IsAuthenticated
 
 # Create your views here.
 

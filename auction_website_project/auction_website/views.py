@@ -1,46 +1,47 @@
-from django.shortcuts import render, redirect
-from .models import Category, Item, Condition, CustomUser, ItemPhoto
 from django.contrib.auth import authenticate, login, logout
-from django.contrib import messages
-from . import validators
-from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
-from django.contrib.auth.decorators import login_required
 from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 
 # Create your views here.
 
 
-class CategoryList(generics.ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+class Conditions(APIView):
     permission_classes = [AllowAny]
 
+    def get(self, request):
+        conditions = Condition.objects.all()
+        serializer = ConditionsSerializer(conditions, many=True)
 
-class ConditionList(generics.ListAPIView):
-    queryset = Condition.objects.all()
-    serializer_class = ConditionSerializer
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class Items(APIView):
     permission_classes = [AllowAny]
 
+    def get(self, request):
+        conditions = Item.objects.all()
+        serializer = ItemsSerializer(conditions, many=True)
 
-class CustomUserList(generics.ListAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = CustomUserSerializer
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class Categories(APIView):
     permission_classes = [AllowAny]
 
+    def get(self, request):
+        categories = Category.objects.all()
+        serializer = CategoriesSerializer(categories, many=True)
 
-class ItemList(generics.ListAPIView):
-    queryset = Item.objects.all()
-    serializer_class = ItemSerializer
-    permission_classes = [AllowAny]
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ItemsNewestAPIView(APIView):
+class ItemsNewest(APIView):
     permission_classes = [AllowAny]
 
     @staticmethod
@@ -51,18 +52,7 @@ class ItemsNewestAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoriesAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    @staticmethod
-    def get(request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class CategoryAPIView(APIView):
+class SingleCategory(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, category_name):
@@ -72,7 +62,7 @@ class CategoryAPIView(APIView):
         return Response(serializer.data)
 
 
-class UserCreateAPIView(APIView):
+class UserCreate(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -92,7 +82,7 @@ class UserCreateAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginAPIView(APIView):
+class UserLogin(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -111,8 +101,17 @@ class UserLoginAPIView(APIView):
         return Response({'detail': 'Invalid username or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class UserDeleteAPIView(APIView):
-    @login_required
+class UserLoggedIn(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_serializer = UserSerializer(request.user)
+        return Response(user_serializer.data)
+
+
+class UserDelete(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         user = request.user
         password = request.data.get('password')
@@ -120,7 +119,16 @@ class UserDeleteAPIView(APIView):
         if authenticate(username=user.username, password=password):
             user.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
         else:
             message = 'Wrong password.'
             return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLogout(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request)
+        return Response({'detail': 'Logout successful.'})
 
