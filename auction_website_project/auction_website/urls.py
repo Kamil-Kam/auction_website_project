@@ -15,4 +15,5 @@ urlpatterns = [
     path('api/user/delete/', UserDelete.as_view(), name='user/delete'),
     path('api/user/logged_in/', UserLoggedIn.as_view(), name='user/logged_in'),
     path('api/user/logout/', UserLogout.as_view(), name='user/logout'),
+    path('api/user/avatar/', UserAvatar.as_view(), name='user/avatar'),
 ]

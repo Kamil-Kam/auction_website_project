@@ -130,3 +130,28 @@ class UserLogout(APIView):
         logout(request)
         return Response({'detail': 'Logout successful.'})
 
+
+class UserAvatar(APIView):
+    permission_classes = [IsAuthenticated]
+    # parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        serializer = AvatarSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = request.user
+            user.avatar = serializer.validated_data['avatar']
+            user.save()
+            return Response({'detail': 'Avatar uploaded successfully'})
+
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request):
+        user = request.user
+
+        if user.avatar:
+            user.avatar.delete()
+            user.avatar = None
+            user.save()
+
+        return Response({'detail': 'Avatar deleted successfully'})

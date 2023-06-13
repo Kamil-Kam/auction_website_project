@@ -82,3 +82,20 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['email', 'username', 'first_name', 'last_name', 'country',
                   'city', 'street', 'postcode']
 
+
+class AvatarSerializer(serializers.Serializer):
+    avatar = serializers.ImageField()
+
+    def validat(self, value):
+
+        max_size = 5 * 1024 * 1024
+        if value.size > max_size:
+            raise serializers.ValidationError('Avatar file size exceeds the limit')
+
+        max_width = 500
+        max_height = 500
+        if value.width > max_width or value.height > max_height:
+            raise serializers.ValidationError('Avatar dimensions exceed the limit')
+
+        return value
+
