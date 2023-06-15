@@ -99,3 +99,4 @@ class AvatarSerializer(serializers.Serializer):
 
         return value
 
+
