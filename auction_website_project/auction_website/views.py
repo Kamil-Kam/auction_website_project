@@ -5,7 +5,7 @@ from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
+
 
 # Create your views here.
 
@@ -134,14 +134,12 @@ class UserLogout(APIView):
 class UserAvatar(APIView):
     permission_classes = [IsAuthenticated]
     # parser_classes = [MultiPartParser, FormParser]
-    print('oleoleole')
+
     def post(self, request):
-        print('test0')
         serializer = AvatarSerializer(data=request.data)
-        print('test')
+
         if serializer.is_valid():
             user = request.user
-            print('test2', user.username)
             user.avatar = serializer.validated_data['avatar']
             user.save()
             return Response({'detail': 'Avatar uploaded successfully'})

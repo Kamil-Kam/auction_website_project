@@ -80,13 +80,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['email', 'username', 'first_name', 'last_name', 'country',
-                  'city', 'street', 'postcode', 'avatar']
+                  'city', 'street', 'postcode']
 
 
 class AvatarSerializer(serializers.Serializer):
     avatar = serializers.ImageField()
 
-    def validate(self, value):
+    def validat(self, value):
 
         max_size = 5 * 1024 * 1024
         if value.size > max_size:
