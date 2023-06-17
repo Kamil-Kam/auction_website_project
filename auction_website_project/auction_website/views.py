@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password, check_password
-from rest_framework import status
+from rest_framework import status, viewsets
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -133,15 +133,18 @@ class UserLogout(APIView):
 
 class UserAvatar(APIView):
     permission_classes = [IsAuthenticated]
-    # parser_classes = [MultiPartParser, FormParser]
-    print('oleoleole')
+    parser_classes = [MultiPartParser]
+
+    def get(self, request):
+
+        user = request.user
+        return Response(user.username)
+
     def post(self, request):
-        print('test0')
         serializer = AvatarSerializer(data=request.data)
-        print('test')
+
         if serializer.is_valid():
             user = request.user
-            print('test2', user.username)
             user.avatar = serializer.validated_data['avatar']
             user.save()
             return Response({'detail': 'Avatar uploaded successfully'})
@@ -157,3 +160,28 @@ class UserAvatar(APIView):
             user.save()
 
         return Response({'detail': 'Avatar deleted successfully'})
+
+
+class ItemAddView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser]
+
+    def post(self, request):
+        serializer = ItemCreateSerializer(data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'detail': 'Item added'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ItemView(APIView):
+
+    def get(self, request, item_id):
+        item = Item.objects.get(id=item_id)
+        serializer = ItemViewSerializer(item)
+        return Response(serializer.data)
+
+
+

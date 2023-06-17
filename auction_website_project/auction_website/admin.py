@@ -1,11 +1,11 @@
 from django.contrib import admin
-from . models import Category, Condition, Item, CustomUser, ItemPhoto
+from . models import *
 
 # Register your models here.
 
 
-admin.site.register(Category)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Condition)
-admin.site.register(Item)
+admin.site.register(Item, ItemAdmin)
 admin.site.register(CustomUser)
 admin.site.register(ItemPhoto)

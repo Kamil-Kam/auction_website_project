@@ -86,17 +86,49 @@ class UserSerializer(serializers.ModelSerializer):
 class AvatarSerializer(serializers.Serializer):
     avatar = serializers.ImageField()
 
-    def validate(self, value):
 
-        max_size = 5 * 1024 * 1024
-        if value.size > max_size:
-            raise serializers.ValidationError('Avatar file size exceeds the limit')
+class ItemCreateSerializer(serializers.Serializer):
+    description = serializers.CharField()
+    title = serializers.CharField()
+    price = serializers.DecimalField(max_digits=8, decimal_places=2)
+    category = serializers.CharField()
+    condition = serializers.CharField()
+    location = serializers.CharField()
+    amount = serializers.IntegerField()
+    main_image = serializers.ImageField()
+    images = serializers.ListField(child=serializers.ImageField())
 
-        max_width = 500
-        max_height = 500
-        if value.width > max_width or value.height > max_height:
-            raise serializers.ValidationError('Avatar dimensions exceed the limit')
+    def create(self, validated_data):
+        user = self.context['request'].user
+        item = Item(
+            description=validated_data['description'],
+            title=validated_data['title'],
+            price=validated_data['price'],
+            category=Category.objects.get(id=validated_data['category']),
+            condition=Condition.objects.get(id=validated_data['condition']),
+            location=validated_data['location'],
+            amount=validated_data['amount'],
+            user_seller=user,
+            main_image=validated_data['main_image']
+        )
 
-        return value
+        item.full_clean()
+        item.save()
+
+        images = validated_data.get('images')
+        if images:
+            for image in images:
+                item_photo = ItemPhoto.objects.create(image=image)
+                item.images.add(item_photo)
+
+
+
+class ItemViewSerializer(serializers.ModelSerializer):
+    images = ItemPhotoSerializer(many=True)
+
+    class Meta:
+        model = Item
+        fields = ['description', 'title', 'price', 'category', 'condition',
+                  'location', 'amount', 'main_image', 'images', 'created_data']
 
 
