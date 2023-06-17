@@ -5,7 +5,6 @@ from .views import *
 urlpatterns = [
     path('conditions/', Conditions.as_view(), name='conditions'),
     path('categories/', Categories.as_view(), name='categories'),
-    path('category/<str:category_name>/items', SingleCategoryItems.as_view(), name='category/items'),
 
     path('user/create/', UserCreate.as_view(), name='user/create'),
     path('user/login/', UserLogin.as_view(), name='user/login'),
@@ -15,6 +14,7 @@ urlpatterns = [
     path('user/avatar/', UserAvatar.as_view(), name='user/avatar'),
 
     path('items/', Items.as_view(), name='items'),
+    path('category/<str:category_name>/items', SingleCategoryItems.as_view(), name='category/items'),
     path('items/newest', ItemsNewest.as_view(), name='items/newest'),
     path('item/add', ItemAddView.as_view(), name='item/add'),
     path('item/view/<str:item_id>', ItemView.as_view(), name='item/view'),
