@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django_resized import ResizedImageField
 from . functions import get_avatars_path
+from django.contrib import admin
 
 # Create your models here.
 
@@ -13,6 +14,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
 
 
 class Condition(models.Model):
@@ -45,6 +50,10 @@ class Item(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class ItemAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
 
 
 class ItemPhoto(models.Model):
