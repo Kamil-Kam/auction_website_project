@@ -5,7 +5,8 @@ Eventually, it will be a website that enables logged-in users to sell and purcha
 <br />
 <br />
 Backend: Kamil-Kam<br />
-Frontend:<br />
+Frontend: lukaasz555
+<br />
 
 
 #### Backend: Django
