@@ -21,7 +21,7 @@ class ItemPhotoSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
 
 
-class ItemsSerializer(serializers.ModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     images = ItemPhotoSerializer(many=True)
 
     class Meta:

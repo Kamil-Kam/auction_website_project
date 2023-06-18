@@ -63,6 +63,10 @@ class ItemPhoto(models.Model):
         return str(self.image)
 
 
+class AdminItemPhoto(admin.ModelAdmin):
+    readonly_fields = ('id',)
+
+
 """
 built in User model:
 username: The username used for authentication. It should be unique.
