@@ -121,6 +121,28 @@ class ItemCreateSerializer(serializers.Serializer):
                 item_photo = ItemPhoto.objects.create(image=image)
                 item.images.add(item_photo)
 
+    def update(self, instance, validated_data):
+        instance.description = validated_data.get('description', instance.description)
+        instance.title = validated_data.get('title', instance.title)
+        instance.price = validated_data.get('price', instance.price)
+        instance.category = Category.objects.get(id=validated_data.get('category', instance.category.id))
+        instance.condition = Condition.objects.get(id=validated_data.get('condition', instance.condition.id))
+        instance.location = validated_data.get('location', instance.location)
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.main_image = validated_data.get('main_image', instance.main_image)
+
+        instance.full_clean()
+        instance.save()
+
+        images = validated_data.get('images')
+        if images:
+            instance.images.all().delete()
+
+            for image in images:
+                item_photo = ItemPhoto.objects.create(image=image)
+                instance.images.add(item_photo)
+
+        return instance
 
 
 class ItemViewSerializer(serializers.ModelSerializer):

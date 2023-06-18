@@ -27,12 +27,20 @@ class Condition(models.Model):
         return self.condition
 
 
+class ConditionAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
+
+
 class CustomUser(AbstractUser):
     country = models.CharField(max_length=20, validators=[validators.validate_name])
     city = models.CharField(max_length=30, validators=[validators.validate_name])
     street = models.CharField(max_length=30, validators=[validators.validate_name])
     postcode = models.CharField(max_length=10, validators=[validators.validate_postcode])
     avatar = ResizedImageField(size=[256, 256], upload_to=get_avatars_path,  blank=True, null=True)
+
+
+class CustomUserAdmin(admin.ModelAdmin):
+    readonly_fields = ('id',)
 
 
 class Item(models.Model):
