@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
+from .paginations import *
 
 # Create your views here.
 
@@ -16,16 +17,6 @@ class Conditions(APIView):
     def get(self, request):
         conditions = Condition.objects.all()
         serializer = ConditionsSerializer(conditions, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class Items(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        conditions = Item.objects.all()
-        serializer = ItemsSerializer(conditions, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -45,7 +36,7 @@ class ItemsNewest(APIView):
 
     def get(self, request):
         items = list(reversed(Item.objects.order_by('-created_data')))[:5]
-        serializer = ItemsSerializer(items, many=True)
+        serializer = ItemSerializer(items, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -55,7 +46,7 @@ class SingleCategoryItems(APIView):
 
     def get(self, request, category_name):
         items = Item.objects.filter(category__category=category_name)
-        serializer = ItemsSerializer(items, many=True)
+        serializer = ItemSerializer(items, many=True)
 
         return Response(serializer.data)
 
@@ -110,7 +101,7 @@ class UserLoggedIn(APIView):
 class UserDelete(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def delete(self, request):
         user = request.user
         password = request.data.get('password')
 
@@ -184,4 +175,67 @@ class ItemView(APIView):
         return Response(serializer.data)
 
 
+class Items(APIView):
+    permission_classes = [AllowAny]
+    pagination_class = ItemPagination
 
+    def get(self, request):
+        conditions = Item.objects.all()
+
+        sort_by = request.query_params.get('sort_by', 'created_date')
+        if sort_by == 'price':
+            conditions = conditions.order_by('price')
+        elif sort_by == '-price':
+            conditions = conditions.order_by('-price')
+
+        if sort_by == 'created_data':
+            conditions = conditions.order_by('created_data')
+        elif sort_by == '-created_data':
+            conditions = conditions.order_by('-created_data')
+
+        paginator = self.pagination_class()
+        paginated_conditions = paginator.paginate_queryset(conditions, request)
+        serializer = ItemSerializer(paginated_conditions, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+
+
+class ItemsYours(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        items = Item.objects.filter(user_seller=user)
+        serializer = ItemSerializer(items, many=True)
+        return Response(serializer.data)
+
+
+class ItemDelete(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, item_id):
+        user = request.user
+        item = Item.objects.get(id=item_id)
+
+        if user == item.user_seller:
+            item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class PhotoDelete(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, item_id, photo_id):
+        user = request.user
+        item = Item.objects.get(id=item_id)
+        photo = ItemPhoto.objects.get(id=photo_id)
+
+        if user == item.user_seller:
+            photo.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
