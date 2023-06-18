@@ -31,26 +31,6 @@ class Categories(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ItemsNewest(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        items = list(reversed(Item.objects.order_by('-created_data')))[:5]
-        serializer = ItemSerializer(items, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class SingleCategoryItems(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request, category_name):
-        items = Item.objects.filter(category__category=category_name)
-        serializer = ItemSerializer(items, many=True)
-
-        return Response(serializer.data)
-
-
 class UserCreate(APIView):
     permission_classes = [AllowAny]
 
@@ -166,6 +146,22 @@ class ItemAddView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request):
+        item_id = request.data.get('id')
+
+        try:
+            item = Item.objects.get(id=item_id)
+        except Item.DoesNotExist:
+            return Response({'detail': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ItemCreateSerializer(item, data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'detail': 'Item updated'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ItemView(APIView):
 
@@ -180,34 +176,35 @@ class Items(APIView):
     pagination_class = ItemPagination
 
     def get(self, request):
-        conditions = Item.objects.all()
+
+        category = request.query_params.get('category')
+        user_seller = request.query_params.get('user_seller')
+
+        if category:
+            items = Item.objects.filter(category__category=category)
+
+        elif user_seller:
+            items = Item.objects.filter(category__user_seller=user_seller)
+
+        else:
+            items = Item.objects.all()
 
         sort_by = request.query_params.get('sort_by', 'created_date')
         if sort_by == 'price':
-            conditions = conditions.order_by('price')
+            items = items.order_by('price')
         elif sort_by == '-price':
-            conditions = conditions.order_by('-price')
+            items = items.order_by('-price')
 
         if sort_by == 'created_data':
-            conditions = conditions.order_by('created_data')
+            items = items.order_by('created_data')
         elif sort_by == '-created_data':
-            conditions = conditions.order_by('-created_data')
+            items = items.order_by('-created_data')
 
         paginator = self.pagination_class()
-        paginated_conditions = paginator.paginate_queryset(conditions, request)
-        serializer = ItemSerializer(paginated_conditions, many=True)
+        paginated_items = paginator.paginate_queryset(items, request)
+        serializer = ItemSerializer(paginated_items, many=True)
 
         return paginator.get_paginated_response(serializer.data)
-
-
-class ItemsYours(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        items = Item.objects.filter(user_seller=user)
-        serializer = ItemSerializer(items, many=True)
-        return Response(serializer.data)
 
 
 class ItemDelete(APIView):
@@ -219,22 +216,6 @@ class ItemDelete(APIView):
 
         if user == item.user_seller:
             item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-class PhotoDelete(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, item_id, photo_id):
-        user = request.user
-        item = Item.objects.get(id=item_id)
-        photo = ItemPhoto.objects.get(id=photo_id)
-
-        if user == item.user_seller:
-            photo.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
         else:

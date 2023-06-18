@@ -5,7 +5,7 @@ from . models import *
 
 
 admin.site.register(Category, CategoryAdmin)
-admin.site.register(Condition)
+admin.site.register(Condition, ConditionAdmin)
 admin.site.register(Item, ItemAdmin)
-admin.site.register(CustomUser)
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(ItemPhoto, AdminItemPhoto)
