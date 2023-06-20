@@ -33,11 +33,12 @@ class ItemSerializer(serializers.ModelSerializer):
 class UserCreateSerializer(serializers.ModelSerializer):
     password = serializers.CharField()
     repeated_password = serializers.CharField()
+    avatar = serializers.ImageField(required=False)
 
     class Meta:
         model = CustomUser
         fields = ['email', 'username', 'first_name', 'last_name', 'country',
-                  'city', 'street', 'postcode', 'password', 'repeated_password']
+                  'city', 'street', 'postcode', 'password', 'repeated_password', 'avatar']
 
     def validate(self, attrs):
         password = attrs.get('password')
@@ -56,10 +57,27 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
         return user
 
+    def update(self, instance, validated_data):
+        instance.email = validated_data.get('email', instance.email)
+        instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.country = validated_data.get('country', instance.country)
+        instance.city = validated_data.get('city', instance.city)
+        instance.street = validated_data.get('street', instance.street)
+        instance.postcode = validated_data.get('postcode', instance.postcode)
+        instance.password = validated_data.get('password', instance.password)
+        instance.avatar = validated_data.get('avatar')
+
+        instance.full_clean()
+        instance.save()
+
+        return instance
+
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(max_length=150)
-    password = serializers.CharField(max_length=128)
+    username = serializers.CharField()
+    password = serializers.CharField()
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -81,10 +99,6 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['email', 'username', 'first_name', 'last_name', 'country',
                   'city', 'street', 'postcode', 'avatar']
-
-
-class AvatarSerializer(serializers.Serializer):
-    avatar = serializers.ImageField()
 
 
 class ItemCreateSerializer(serializers.Serializer):

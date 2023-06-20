@@ -50,6 +50,34 @@ class UserCreate(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request):
+        username = request.data.get('username')
+
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            return Response({'detail': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserCreateSerializer(user, data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'detail': 'user updated'}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        user = request.user
+        password = request.data.get('password')
+
+        if authenticate(username=user.username, password=password):
+            user.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        else:
+            message = 'Wrong password.'
+            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserLogin(APIView):
     permission_classes = [AllowAny]
@@ -78,59 +106,12 @@ class UserLoggedIn(APIView):
         return Response(user_serializer.data)
 
 
-class UserDelete(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request):
-        user = request.user
-        password = request.data.get('password')
-
-        if authenticate(username=user.username, password=password):
-            user.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        else:
-            message = 'Wrong password.'
-            return Response({'message': message}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class UserLogout(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         logout(request)
         return Response({'detail': 'Logout successful.'})
-
-
-class UserAvatar(APIView):
-    permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser]
-
-    def get(self, request):
-
-        user = request.user
-        return Response(user.username)
-
-    def post(self, request):
-        serializer = AvatarSerializer(data=request.data)
-
-        if serializer.is_valid():
-            user = request.user
-            user.avatar = serializer.validated_data['avatar']
-            user.save()
-            return Response({'detail': 'Avatar uploaded successfully'})
-
-        return Response(serializer.errors, status=400)
-
-    def delete(self, request):
-        user = request.user
-
-        if user.avatar:
-            user.avatar.delete()
-            user.avatar = None
-            user.save()
-
-        return Response({'detail': 'Avatar deleted successfully'})
 
 
 class ItemAddView(APIView):
@@ -161,6 +142,17 @@ class ItemAddView(APIView):
             return Response({'detail': 'Item updated'}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, item_id):
+        user = request.user
+        item = Item.objects.get(id=item_id)
+
+        if user == item.user_seller:
+            item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ItemView(APIView):
@@ -207,16 +199,3 @@ class Items(APIView):
         return paginator.get_paginated_response(serializer.data)
 
 
-class ItemDelete(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, item_id):
-        user = request.user
-        item = Item.objects.get(id=item_id)
-
-        if user == item.user_seller:
-            item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
