@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from .views import *
 
 
@@ -11,8 +11,8 @@ urlpatterns = [
     path('user/logged_in/', UserLoggedIn.as_view(), name='user/logged_in'),
     path('user/logout/', UserLogout.as_view(), name='user/logout'),
 
+    path('item/create/', ItemCreate.as_view(), name='item/create'),  # create, update, delete
+    path('item/<str:item_id>/', Item.as_view(), name='item'),
     path('items/', Items.as_view(), name='items'),
-    path('item/add/', ItemAddView.as_view(), name='item/add'),  # create, update, delete
-    path('item/view/<str:item_id>/', ItemView.as_view(), name='item/view'),
 ]
 

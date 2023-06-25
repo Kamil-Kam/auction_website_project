@@ -1,7 +1,6 @@
 from django.db import models
 from . import validators
 from django.contrib.auth.models import AbstractUser
-from django.core.exceptions import ValidationError
 from django_resized import ResizedImageField
 from . functions import get_avatars_path
 from django.contrib import admin

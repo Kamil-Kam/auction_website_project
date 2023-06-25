@@ -1,11 +1,11 @@
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.hashers import make_password, check_password
-from rest_framework import status, viewsets
+from django.contrib.auth import logout, login
+from django.contrib.auth.hashers import make_password
+from rest_framework import status
 from .serializers import *
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser
 from .paginations import *
 
 # Create your views here.
@@ -47,6 +47,7 @@ class UserCreate(APIView):
             user = serializer.save(password=make_password(password))
 
             return Response({"user_id": user.id}, status=status.HTTP_201_CREATED)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,6 +56,7 @@ class UserCreate(APIView):
 
         try:
             user = CustomUser.objects.get(username=username)
+
         except CustomUser.DoesNotExist:
             return Response({'detail': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -63,6 +65,7 @@ class UserCreate(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'detail': 'user updated'}, status=status.HTTP_200_OK)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -72,7 +75,7 @@ class UserCreate(APIView):
 
         if authenticate(username=user.username, password=password):
             user.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'user deleted'}, status=status.HTTP_204_NO_CONTENT)
 
         else:
             message = 'Wrong password.'
@@ -114,7 +117,7 @@ class UserLogout(APIView):
         return Response({'detail': 'Logout successful.'})
 
 
-class ItemAddView(APIView):
+class ItemCreate(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = [MultiPartParser]
 
@@ -124,6 +127,7 @@ class ItemAddView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'detail': 'Item added'}, status=status.HTTP_201_CREATED)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -132,6 +136,7 @@ class ItemAddView(APIView):
 
         try:
             item = Item.objects.get(id=item_id)
+
         except Item.DoesNotExist:
             return Response({'detail': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -140,6 +145,7 @@ class ItemAddView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'detail': 'Item updated'}, status=status.HTTP_200_OK)
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -149,17 +155,17 @@ class ItemAddView(APIView):
 
         if user == item.user_seller:
             item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'detail': 'item deleted'}, status=status.HTTP_204_NO_CONTENT)
 
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class ItemView(APIView):
+class Item(APIView):
 
     def get(self, request, item_id):
         item = Item.objects.get(id=item_id)
-        serializer = ItemViewSerializer(item)
+        serializer = ItemSerializer(item)
         return Response(serializer.data)
 
 
