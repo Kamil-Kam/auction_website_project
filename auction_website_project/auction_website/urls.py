@@ -12,7 +12,7 @@ urlpatterns = [
     path('user/logout/', UserLogout.as_view(), name='user/logout'),
 
     path('item/create/', ItemCreate.as_view(), name='item/create'),  # create, update, delete
-    path('item/<str:item_id>/', Item.as_view(), name='item'),
+    path('item/<str:item_id>/', ItemView.as_view(), name='item'),
     path('items/', Items.as_view(), name='items'),
 ]
 
