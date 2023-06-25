@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Category, Condition, CustomUser, Item, ItemPhoto
-from django.contrib.auth import authenticate, login
+from .models import *
+from django.contrib.auth import authenticate
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -130,6 +130,7 @@ class ItemCreateSerializer(serializers.Serializer):
         item.save()
 
         images = validated_data.get('images')
+
         if images:
             for image in images:
                 item_photo = ItemPhoto.objects.create(image=image)
@@ -149,6 +150,7 @@ class ItemCreateSerializer(serializers.Serializer):
         instance.save()
 
         images = validated_data.get('images')
+
         if images:
             instance.images.all().delete()
 
@@ -159,7 +161,7 @@ class ItemCreateSerializer(serializers.Serializer):
         return instance
 
 
-class ItemViewSerializer(serializers.ModelSerializer):
+class ItemSerializer(serializers.ModelSerializer):
     images = ItemPhotoSerializer(many=True)
 
     class Meta:
