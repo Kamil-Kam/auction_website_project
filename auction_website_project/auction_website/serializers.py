@@ -174,7 +174,6 @@ class ItemSerializer(serializers.ModelSerializer):
                   'location', 'amount', 'main_image', 'images', 'created_data']
 
 
-
 class AvatarSerializer(serializers.Serializer):
     avatar = serializers.ImageField()
 
