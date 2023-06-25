@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 
 
 class CategoriesSerializer(serializers.ModelSerializer):
@@ -66,7 +67,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         instance.city = validated_data.get('city', instance.city)
         instance.street = validated_data.get('street', instance.street)
         instance.postcode = validated_data.get('postcode', instance.postcode)
-        instance.password = validated_data.get('password', instance.password)
+        instance.password = validated_data.get(make_password('password'), instance.password)
         instance.avatar = validated_data.get('avatar')
 
         instance.full_clean()
@@ -109,8 +110,8 @@ class ItemCreateSerializer(serializers.Serializer):
     condition = serializers.CharField()
     location = serializers.CharField()
     amount = serializers.IntegerField()
-    main_image = serializers.ImageField()
-    images = serializers.ListField(child=serializers.ImageField())
+    main_image = serializers.ImageField(required=False)
+    images = serializers.ListField(child=serializers.ImageField(), required=False)
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -123,18 +124,22 @@ class ItemCreateSerializer(serializers.Serializer):
             location=validated_data['location'],
             amount=validated_data['amount'],
             user_seller=user,
-            main_image=validated_data['main_image']
         )
+
+        if 'main_image' in validated_data:
+            item.main_image = validated_data['main_image']
 
         item.full_clean()
         item.save()
 
-        images = validated_data.get('images')
+        if 'images' in validated_data:
+            images = validated_data['images']
 
-        if images:
             for image in images:
                 item_photo = ItemPhoto.objects.create(image=image)
                 item.images.add(item_photo)
+
+        return item
 
     def update(self, instance, validated_data):
         instance.description = validated_data.get('description', instance.description)
@@ -144,14 +149,13 @@ class ItemCreateSerializer(serializers.Serializer):
         instance.condition = Condition.objects.get(id=validated_data.get('condition', instance.condition.id))
         instance.location = validated_data.get('location', instance.location)
         instance.amount = validated_data.get('amount', instance.amount)
-        instance.main_image = validated_data.get('main_image', instance.main_image)
+        instance.main_image = validated_data.get('main_image')
 
         instance.full_clean()
         instance.save()
 
-        images = validated_data.get('images')
-
-        if images:
+        if 'images' in validated_data:
+            images = validated_data.get('images')
             instance.images.all().delete()
 
             for image in images:

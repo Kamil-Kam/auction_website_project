@@ -149,9 +149,9 @@ class ItemCreate(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, item_id):
+    def delete(self, request):
         user = request.user
-        item = Item.objects.get(id=item_id)
+        item = Item.objects.get(id=request.data.get('id'))
 
         if user == item.user_seller:
             item.delete()
@@ -161,7 +161,7 @@ class ItemCreate(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class Item(APIView):
+class ItemView(APIView):
 
     def get(self, request, item_id):
         item = Item.objects.get(id=item_id)
